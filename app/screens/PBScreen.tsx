@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -12,8 +11,10 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
+import BackButton from '@/components/BackButton';
+import CustomInput from '@/components/CustomInput';
+import CustomLabel from '@/components/CustomLabel';
 
 const PB_KEYS = {
   bench: 'pb_bench',
@@ -22,7 +23,6 @@ const PB_KEYS = {
 };
 
 export default function PersonalBestsScreen() {
-  const router = useRouter();
   const [bench, setBench] = useState('');
   const [squat, setSquat] = useState('');
   const [deadlift, setDeadlift] = useState('');
@@ -75,7 +75,7 @@ export default function PersonalBestsScreen() {
       <View style={styles.pbRow}>
         <Image source={iconSource} style={styles.pbIcon} />
         <Text style={styles.pbLabel}>{label}</Text>
-        <TextInput
+        <CustomInput
           style={[styles.pbInput, locked[key] && styles.pbInputLocked]}
           keyboardType="numeric"
           placeholder="kg"
@@ -84,6 +84,7 @@ export default function PersonalBestsScreen() {
           editable={!locked[key]}
           onChangeText={setValue}
         />
+        
         <TouchableOpacity
           onPress={() => {
             if (!isSaveDisabled) savePB(key, value);
@@ -123,16 +124,14 @@ export default function PersonalBestsScreen() {
       end={{ x: 0.5, y: 0 }}
       style={styles.gradient}
     >
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/MenuScreen')}>
-        <Image source={require('../../assets/images/right-arrow.png')} style={styles.backIcon} />
-      </TouchableOpacity>
+        <BackButton />
 
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
-        <Text style={styles.header}>Personal Bests</Text>
+        <CustomLabel>Personal Bests</CustomLabel>
         {renderPBInput('Bench', bench, setBench, 'bench', require('../../assets/images/bench-press.png'))}
         {renderPBInput('Squat', squat, setSquat, 'squat', require('../../assets/images/squat.png'))}
         {renderPBInput('Deadlift', deadlift, setDeadlift, 'deadlift', require('../../assets/images/deadlift.png'))}
@@ -148,24 +147,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  header: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: 'white',
-    textAlign: 'center',
-    marginBottom: 40,
-    fontFamily: 'Roboto-Light',
-  },
   pbRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 40,
     gap: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 8,
-    height: 50,
-    paddingLeft: 8,
-    paddingRight: 8,
+    borderRadius: 30,
+    height: 60,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   pbIcon: {
     width: 40,
@@ -181,27 +172,11 @@ const styles = StyleSheet.create({
   pbInput: {
     flex: 1,
     height: 40,
-    backgroundColor: '#587458',
-    color: 'white',
     fontSize: 16,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    fontFamily: 'Roboto-Bold',
-    textAlign: 'center',
+    borderRadius: 10,
   },
   pbInputLocked: {
     backgroundColor: '#00c851',
     color: 'white',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 999,
-  },
-  backIcon: {
-    width: 60,
-    height: 60,
-    transform: [{ rotate: '180deg' }],
   },
 });

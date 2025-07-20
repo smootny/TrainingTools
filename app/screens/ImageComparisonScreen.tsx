@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
   Image,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '@/components/BackButton';
+import CustomLabel from '@/components/CustomLabel';
+import SmallButton from '@/components/SmallButton';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function ImageComparisonScreen() {
-  const router = useRouter();
   const [beforeImage, setBeforeImage] = useState<string | null>(null);
   const [afterImage, setAfterImage] = useState<string | null>(null);
   const [sliderValue, setSliderValue] = useState<number>(50);
@@ -47,12 +46,10 @@ export default function ImageComparisonScreen() {
 
   return (
     <LinearGradient colors={["#35e74d", "black"]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/MenuScreen')}>
-        <Image source={require('../../assets/images/right-arrow.png')} style={styles.backIcon} />
-      </TouchableOpacity>
+      <BackButton />
       
       <View style={styles.centeredWrapper}>
-        <Text style={styles.label}>Lets see your progress!</Text>
+        <CustomLabel>Lets see your progress!</CustomLabel>
         <View style={styles.wrapper}>
           <View style={styles.imageContainer}>
             {beforeImage && (
@@ -79,12 +76,16 @@ export default function ImageComparisonScreen() {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.uploadButton} onPress={() => pickImage(setBeforeImage, 'beforeImage')}>
-            <Text style={styles.buttonText}>BEFORE</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.uploadButton} onPress={() => pickImage(setAfterImage, 'afterImage')}>
-            <Text style={styles.buttonText}>AFTER</Text>
-          </TouchableOpacity>
+          <SmallButton
+           title='Before'
+           onPress={() => pickImage(setBeforeImage, 'beforeImage')}
+           variant="yellow"
+           />
+           <SmallButton
+           title='After'
+           onPress={() => pickImage(setAfterImage, 'afterImage')}
+           variant="yellow"
+           />
         </View>
       </View>
     </LinearGradient>
@@ -94,17 +95,6 @@ export default function ImageComparisonScreen() {
 const styles = StyleSheet.create({
   gradient: {
     flex: 1,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 999,
-  },
-  backIcon: {
-    width: 60,
-    height: 60,
-    transform: [{ rotate: '180deg' }],
   },
   centeredWrapper: {
     flex: 1,
@@ -151,29 +141,4 @@ const styles = StyleSheet.create({
     gap: 60,
     marginTop: 30,
   },
-  uploadButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 3,
-    borderColor: 'rgb(0,255,0)',
-    backgroundColor: '#0ed022',
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 18,
-    color: '#474947',
-    fontFamily: 'Roboto-Regular'
-  },
-  label: {
-    fontSize: 16,
-    color: 'white',
-    fontFamily: 'Roboto-Light',
-    paddingBottom: 10
-  }
 });

@@ -2,25 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
-  TouchableOpacity,
   Animated,
   Dimensions,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import BackButton from '@/components/BackButton';
+import CustomInput from '@/components/CustomInput';
+import CustomLabel from '@/components/CustomLabel';
+import BigButton from '@/components/BigButton';
 
 const screenHeight = Dimensions.get('window').height;
 
 export default function ProgressBarScreen() {
-  const router = useRouter();
   const progressHeight = useRef(new Animated.Value(0)).current;
   const progressWidth = useRef(new Animated.Value(100)).current;
 
@@ -133,9 +132,7 @@ export default function ProgressBarScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={30}
         >
-          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/MenuScreen')}>
-            <Image source={require('../../assets/images/right-arrow.png')} style={styles.backIcon} />
-          </TouchableOpacity>
+         <BackButton />
 
           {!isDebounceActive && countdown === 0 && (
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -143,29 +140,27 @@ export default function ProgressBarScreen() {
                 { label: 'How much time you need for excentric move?', value: fillTime, setter: setFillTime },
                 { label: 'How much time you need for pause?', value: stayTime, setter: setStayTime },
                 { label: 'How much time you need for izocentric move?', value: emptyTime, setter: setEmptyTime },
-                { label: 'How much time you need to prepare yourself for exercise?', value: debounceTime, setter: setDebounceTime },
+                { label: 'How much time you need to prepare for an exercise?', value: debounceTime, setter: setDebounceTime },
                 { label: 'How many reps you want to do?', value: repetitions, setter: setRepetitions },
               ].map(({ label, value, setter }, idx) => (
                 <View key={idx} style={styles.inputBlock}>
-                  <Text style={styles.label}>{label}</Text>
-                  <TextInput
-                    keyboardType="numeric"
-                    placeholder="in seconds"
-                    style={styles.input}
-                    value={value}
-                    onChangeText={setter}
-                  />
+                  <CustomLabel style={styles.label}>{label}</CustomLabel>
+                  <CustomInput
+                  value={value}
+                  style={styles.input}
+                  keyboardType="numeric"
+                  placeholder="(seconds)"
+                  onChangeText={setter}
+                />
                 </View>
               ))}
 
               <View style={{ alignItems: 'center', marginTop: 20 }}>
-                <TouchableOpacity
-                  disabled={!inputsFilled}
-                  style={[styles.startButton, inputsFilled && styles.startButtonActive]}
-                  onPress={startCountdown}
-                >
-                  <Text style={[styles.startText, inputsFilled && styles.startTextActive]}>Go!</Text>
-                </TouchableOpacity>
+              <BigButton
+                title="Start!"
+                onPress={startCountdown}
+                disabled={!inputsFilled}
+              />
               </View>
             </ScrollView>
           )}
@@ -208,61 +203,14 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
     paddingHorizontal: 22,
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 999,
-  },
-  backIcon: {
-    width: 60,
-    height: 60,
-    transform: [{ rotate: '180deg' }],
-  },
   inputBlock: {
     marginBottom: 22,
   },
-  label: {
-    fontFamily: 'Roboto-Light',
-    fontSize: 14,
-    marginBottom: 4,
-    color: 'white',
-  },
   input: {
-    backgroundColor: '#587458',
-    color: 'white',
-    fontSize: 32,
-    textAlign: 'center',
-    borderRadius: 10,
-    paddingVertical: 10,
+    alignSelf: 'center'
   },
-  startButton: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 3,
-    borderColor: 'rgb(0,255,0)',
-    backgroundColor: '#0ed022',
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 40,
-    opacity: 0.8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  startButtonActive: {
-    backgroundColor: '#19361e',
-    borderColor: '#000000',
-    borderWidth: 3,
-  },
-  startText: {
-    color: 'black',
-    fontSize: 26,
-    fontFamily: 'Roboto-Regular',
-  },
-  startTextActive: {
-    color: 'white',
+  label: {
+    paddingLeft: 4
   },
   countdownOverlay: {
     position: 'absolute',

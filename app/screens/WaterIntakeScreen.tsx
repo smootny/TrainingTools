@@ -2,24 +2,25 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
+import BackButton from '@/components/BackButton';
+import CustomInput from '@/components/CustomInput';
+import CustomLabel from '@/components/CustomLabel';
+import BigButton from '@/components/BigButton';
+import SmallButton from '@/components/SmallButton';
 
 export default function WaterIntakeScreen() {
-  const router = useRouter();
-
   const [gender, setGender] = useLocalStorageState<'male' | 'female'>('gender', 'male');
   const [age, setAge] = useLocalStorageState<string>('age', '');
   const [weight, setWeight] = useLocalStorageState<string>('weight', '');
@@ -76,56 +77,53 @@ export default function WaterIntakeScreen() {
           keyboardVerticalOffset={10}
         >
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/MenuScreen')}>
-              <Image source={require('../../assets/images/right-arrow.png')} style={styles.backIcon} />
-            </TouchableOpacity>
+            <BackButton />
 
             {!showProgress ? (
               <View style={styles.inputBox}>
                 <View style={styles.genderContainer}>
                   <TouchableOpacity
-                    style={[styles.genderButton, gender === 'male' && styles.genderButtonSelected]}
                     onPress={() => setGender('male')}
+                    style={[styles.genderImageWrapper, gender === 'male' && styles.genderSelected]}
                   >
-                    <Text style={styles.genderText}>Male</Text>
+                    <Image source={require('../../assets/images/male.png')}  style={styles.genderImage} resizeMode="contain" />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.genderButton, gender === 'female' && styles.genderButtonSelected]}
                     onPress={() => setGender('female')}
+                    style={[styles.genderImageWrapper, gender === 'female' && styles.genderSelected]}
                   >
-                    <Text style={styles.genderText}>Female</Text>
+                    <Image source={require('../../assets/images/female.png')}  style={styles.genderImage} resizeMode="contain" />
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.inputLabel}>How old are you?</Text>
-                <TextInput
+
+                <CustomLabel>How old are you?</CustomLabel>
+                <CustomInput
                   style={styles.input}
                   keyboardType="numeric"
-                  placeholder="Age"
-                  placeholderTextColor="#fff"
                   value={age}
                   onChangeText={setAge}
+                  placeholder="(number)"
                 />
-                <Text style={styles.inputLabel}>How much do you weight?</Text>
-                <TextInput
+                <CustomLabel>How much do you weight?</CustomLabel>
+                <CustomInput
                   style={styles.input}
                   keyboardType="numeric"
-                  placeholder="Weight (kg)"
-                  placeholderTextColor="#fff"
                   value={weight}
                   onChangeText={setWeight}
+                  placeholder="(kg)"
                 />
-                <TouchableOpacity
-                  style={[styles.calculateButton, inputsFilled && styles.calculateButtonActive]}
+                <BigButton
+                  style={styles.button}
+                  title="Confirm!"
                   onPress={calculateWaterIntake}
                   disabled={!inputsFilled}
-                >
-                  <Text style={[styles.buttonText, inputsFilled && styles.buttonTextActive]}>Calculate</Text>
-                </TouchableOpacity>
+                />
               </View>
             ) : (
               <View style={styles.progressBox}>
                 <Text style={styles.waterDisplay}>You should drink {totalWaterIntake} ml of water daily.</Text>
                 <AnimatedCircularProgress
+                  style={styles.circle}
                   size={200}
                   width={16}
                   fill={percentage}
@@ -137,28 +135,30 @@ export default function WaterIntakeScreen() {
                 >
                   {() => <Text style={styles.percentText}>{Math.floor(percentage)}%</Text>}
                 </AnimatedCircularProgress>
-                <TextInput
-                  style={styles.waterInput}
+                <CustomLabel>How much water did you drink today?</CustomLabel>
+                <CustomInput
+                  style={styles.input}
                   keyboardType="numeric"
-                  placeholder="Water intake (ml)"
-                  placeholderTextColor="#fff"
+                  placeholder="(ml)"
                   value={inputWater}
                   onChangeText={setInputWater}
                 />
-                <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
-                  <TouchableOpacity
-                    style={[styles.addButton, waterInputFilled && styles.addButtonActive]}
-                    onPress={updateProgress}
-                    disabled={!waterInputFilled}
-                  >
-                    <Text style={styles.buttonText}>Add</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.resetButton} onPress={resetProgress}>
-                    <Text style={styles.buttonText}>Reset</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.changeButton} onPress={handleChangeInputs}>
-                    <Text style={styles.buttonText}>Change</Text>
-                  </TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 16, marginTop: 20 }}>
+                  <SmallButton
+                  title='Add'
+                  onPress={updateProgress}
+                  disabled={!waterInputFilled}
+                  />
+                  <SmallButton
+                  title='Reset'
+                  onPress={resetProgress}
+                  variant="red"
+                  />
+                  <SmallButton
+                  title='Change'
+                  onPress={handleChangeInputs}
+                  variant="yellow"
+                  />
                 </View>
               </View>
             )}
@@ -176,118 +176,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 999,
-  },
-  backIcon: {
-    width: 60,
-    height: 60,
-    transform: [{ rotate: '180deg' }],
-  },
   inputBox: {
     width: '80%',
     alignItems: 'center',
-    gap: 16,
+  },
+  circle: {
+    marginTop: 20,
+    marginBottom: 40,
   },
   input: {
-    backgroundColor: '#587458',
-    color: 'white',
-    fontSize: 22,
-    width: '100%',
-    textAlign: 'center',
-    borderRadius: 10,
-    paddingVertical: 14,
-    fontFamily: 'Roboto-Regular',
+    marginBottom: 20,
   },
-  inputLabel: {
-    fontFamily: 'Roboto-Light',
-    fontSize: 16,
-    color: 'white',
-  },
-  waterInput: {
-    backgroundColor: '#587458',
-    color: 'white',
-    fontSize: 22,
-    width: 200,
-    textAlign: 'center',
-    borderRadius: 10,
-    paddingVertical: 14,
-    fontFamily: 'Roboto-Regular',
-  },
-  calculateButton: {
-    marginTop: 20,
-    paddingVertical: 50,
-    paddingHorizontal: 30,
-    borderRadius: 100,
-    borderWidth: 3,
-    borderColor: 'rgb(0,255,0)',
-    backgroundColor: '#0ed022',
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 40,
-    opacity: 0.5,
-  },
-  calculateButtonActive: {
-    backgroundColor: '#19361e',
-    opacity: 0.8,
-  },
-  addButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 3,
-    borderColor: 'rgb(0,255,0)',
-    backgroundColor: '#0ed022',
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addButtonActive: {
-    backgroundColor: '#19361e',
-    opacity: 0.8,
-  },
-  resetButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#e45e69',
-    borderColor: '#e6a1a7',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  changeButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: 'yellow',
-    borderColor: 'orange',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'black',
-    fontSize: 18,
-    fontFamily: 'Roboto-Regular',
-  },
-  buttonTextActive: {
-    color: 'black',
+  button: {
+    marginTop: 40,
   },
   waterDisplay: {
     fontSize: 18,
@@ -303,30 +204,34 @@ const styles = StyleSheet.create({
   },
   progressBox: {
     alignItems: 'center',
-    gap: 20,
   },
   genderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 50,
   },
-  genderButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+  genderImageWrapper: {
+    width: 100,
+    height: 100,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#587458',
     borderWidth: 2,
     borderColor: 'white',
-    backgroundColor: '#587458',
-    opacity: 0.7,
+    opacity: 0.6,
   },
-  genderButtonSelected: {
-    backgroundColor: '#00FF66',
+  genderSelected: {
+    borderColor: '#00FF66',
     opacity: 1,
+    shadowColor: '#00FF66',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
   },
-  genderText: {
-    color: 'black',
-    fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+  genderImage: {
+    width: 60,
+    height: 60,
   },
 });

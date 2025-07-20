@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import {
-  Image,
-  TextInput,
   FlatList,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
-  View,
 } from 'react-native';
 import { Note, useNotesStore } from '../../hooks/useNotesStore';
 import NoteCard from '../../components/NoteCard';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import BackButton from '../../components/BackButton'
+import CustomInput from '@/components/CustomInput';
+import BigButton from '@/components/BigButton';
 
 export default function NotesListScreen() {
   const router = useRouter();
@@ -43,23 +41,15 @@ export default function NotesListScreen() {
           keyboardVerticalOffset={30}
           style={styles.wrapper}
         >
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.push('/screens/MenuScreen')}
-          >
-            <Image
-              source={require('../../assets/images/right-arrow.png')}
-              style={styles.backIcon}
-            />
-          </TouchableOpacity>
+          <BackButton />
 
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search..."
-            placeholderTextColor="white"
+           <CustomInput
+            style={styles.input}
             value={query}
+            placeholder="Search..."
             onChangeText={setQuery}
-          />
+            placeholderTextColor="#ccc"
+            />
 
           <FlatList
             data={filteredNotes}
@@ -80,13 +70,11 @@ export default function NotesListScreen() {
               />
             )}
           />
-
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => router.push('/screens/NoteDetailsScreen')}
-          >
-            <Text style={styles.addButtonText}>+ Add</Text>
-          </TouchableOpacity>
+          <BigButton
+          style={styles.button}
+          title="Add"
+          onPress={() => router.push('/screens/NoteDetailsScreen')}
+              />
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </LinearGradient>
@@ -101,52 +89,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  searchInput: {
+  input: {
     marginTop: 120,
     marginBottom: 20,
-    height: 40,
-    width: 320,
-    textAlign: 'center',
-    backgroundColor: 'black',
-    color: 'white',
-    fontSize: 20,
-    opacity: 0.7,
-    fontFamily: 'Roboto-Light',
-    borderRadius: 8,
   },
   list: {
-    paddingBottom: 140,
+    paddingBottom: 40,
     alignItems: 'center',
   },
-  addButton: {
-      marginBottom: 40,
-      paddingHorizontal: 30,
-      paddingVertical: 42,
-      borderRadius: 100,
-      borderWidth: 3,
-      borderColor: 'rgb(0,255,0)',
-      backgroundColor: '#0ed022',
-      shadowColor: '#05d328',
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 1,
-      shadowRadius: 40,
-      opacity: 0.8,
-      alignItems: 'center',
-  },
-  addButtonText: {
-    fontSize: 20,
-    color: 'black',
-    fontFamily: 'Roboto-Regular'
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 999,
-  },
-  backIcon: {
-    width: 60,
-    height: 60,
-    transform: [{ rotate: '180deg' }],
-  },
+  button: {
+    marginBottom: 40,
+    // paddingVertical: 60,
+  }
 });

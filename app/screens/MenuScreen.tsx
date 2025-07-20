@@ -1,4 +1,3 @@
-// screens/MenuScreen.tsx
 import React from 'react';
 import {
   View,
@@ -92,15 +91,17 @@ const styles = StyleSheet.create({
   button: {
     width: 130,
     height: 130,
-    backgroundColor: '#e7f8e7',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: 'black',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 6,
-    elevation: 6,
+    borderColor: '#19361e',
+    borderWidth: 0.5,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    
   },
   icon: {
     width: 50,
@@ -110,6 +111,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: 'Roboto-Light',
-    color: '#111',
+    color: 'black',
   },
 });

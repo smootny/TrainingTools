@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   StyleSheet,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
@@ -13,6 +10,9 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useNotesStore } from '../../hooks/useNotesStore';
 import { LinearGradient } from 'expo-linear-gradient';
+import CustomInput from '@/components/CustomInput';
+import CustomLabel from '@/components/CustomLabel';
+import SmallButton from '@/components/SmallButton';
 
 export default function NoteDetailsScreen() {
   const router = useRouter();
@@ -64,40 +64,38 @@ export default function NoteDetailsScreen() {
           keyboardVerticalOffset={30}
         >
           <View style={styles.form}>
-            <Text style={styles.label}>Title</Text>
-            <TextInput
-              style={styles.input}
-              value={title}
-              onChangeText={setTitle}
-              placeholder="Enter title"
-              placeholderTextColor="#ccc"
+            <CustomLabel style={styles.label}>Title</CustomLabel>
+            
+            <CustomInput
+            style={styles.input}
+            value={title}
+            placeholder="Enter title"
+            onChangeText={setTitle}
+            placeholderTextColor="#ccc"
             />
 
-            <Text style={styles.label}>Content</Text>
-            <TextInput
-              style={styles.textarea}
-              value={body}
-              onChangeText={setBody}
-              placeholder="Enter content"
-              placeholderTextColor="#ccc"
-              multiline
+            <CustomLabel style={styles.label}>Content</CustomLabel>
+            <CustomInput
+            style={styles.textarea}
+            value={body}
+            placeholder="Enter content"
+            onChangeText={setBody}
+            placeholderTextColor="#ccc"
+            multiline
             />
 
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleSave}
-                disabled={!inputsFilled}
-                style={[
-                  styles.saveButton,
-                  !inputsFilled && styles.saveButtonDisabled,
-                ]}
-              >
-                <Text style={styles.saveText}>Save</Text>
-              </TouchableOpacity>
+              <SmallButton
+              title='Cancel'
+              onPress={handleCancel}
+              variant="red"
+              /> 
+              <SmallButton
+              title="Start!"
+              onPress={handleSave}
+              disabled={!inputsFilled}
+              variant='green'
+              />
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -116,89 +114,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   form: {
-    backgroundColor: 'white',
-    borderRadius: 10,
     padding: 20,
+    height: 400,
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
   label: {
-    fontFamily: 'Roboto-Bold',
-    fontSize: 16,
-    marginBottom: 6,
-    color: '#333',
+    textAlign: 'left',
   },
   input: {
-    backgroundColor: '#587458',
-    color: 'white',
-    fontSize: 18,
-    height: 50,
-    borderRadius: 6,
-    paddingHorizontal: 10,
+    borderRadius: 10,
     marginBottom: 20,
-    fontFamily: 'Roboto-Light',
   },
   textarea: {
-    backgroundColor: '#587458',
-    color: 'white',
-    fontSize: 18,
     height: 120,
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    textAlignVertical: 'top',
-    fontFamily: 'Roboto-Light',
+    borderRadius: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 30,
-  },
-  cancelButton: {
-    padding: 10,
-    backgroundColor: '#e45e69',
-    borderRadius: 50,
-    width: 90,
-    height: 90,
-    borderColor: '#e6a1a7',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cancelText: {
-    color: 'black',
-    fontSize: 18,
-    fontFamily: 'Roboto-Regular',
-  },
-  saveButton: {
-    padding: 10,
-    backgroundColor: '#0ed022',
-    borderRadius: 50,
-    width: 90,
-    height: 90,
-    borderColor: 'rgb(0,255,0)',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveButtonDisabled: {
-    backgroundColor: '#9ccc9c',
-    borderColor: '#b6e2b6',
-    opacity: 0.5,
-  },
-  saveText: {
-    color: 'black',
-    fontSize: 18,
-    fontFamily: 'Roboto-Regular',
   },
 });

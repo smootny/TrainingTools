@@ -1,4 +1,3 @@
-// ✅ useNotesStore.ts — zaktualizowany Zustand store z obsługą ID jako string
 import { create } from 'zustand';
 
 export type Note = {
