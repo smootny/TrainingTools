@@ -149,7 +149,7 @@ export default function ProgressBarScreen() {
                   value={value}
                   style={styles.input}
                   keyboardType="numeric"
-                  placeholder="(seconds)"
+                  placeholder={idx === 4 ? '(number)' : '(seconds)'}
                   onChangeText={setter}
                 />
                 </View>

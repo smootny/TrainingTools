@@ -20,19 +20,26 @@ const PB_KEYS = {
   bench: 'pb_bench',
   squat: 'pb_squat',
   deadlift: 'pb_deadlift',
+  pullups: 'pb_pullups',
+  headpress: 'pb_headpress'
 };
 
 export default function PersonalBestsScreen() {
   const [bench, setBench] = useState('');
   const [squat, setSquat] = useState('');
   const [deadlift, setDeadlift] = useState('');
-  const [locked, setLocked] = useState({ bench: false, squat: false, deadlift: false });
+  const [pullups, setPullups] = useState('');
+  const [headpress, setHeadpress] = useState('');
+  const [locked, setLocked] = useState({ bench: false, squat: false, deadlift: false, pullups: false, headpress: false });
 
   useEffect(() => {
     const loadPBs = async () => {
       const b = await AsyncStorage.getItem(PB_KEYS.bench);
       const s = await AsyncStorage.getItem(PB_KEYS.squat);
       const d = await AsyncStorage.getItem(PB_KEYS.deadlift);
+      const p = await AsyncStorage.getItem(PB_KEYS.pullups);
+      const h = await AsyncStorage.getItem(PB_KEYS.headpress);
+
       if (b) {
         setBench(b);
         setLocked(prev => ({ ...prev, bench: true }));
@@ -44,6 +51,14 @@ export default function PersonalBestsScreen() {
       if (d) {
         setDeadlift(d);
         setLocked(prev => ({ ...prev, deadlift: true }));
+      }
+      if (p) {
+        setPullups(p);
+        setLocked(prev => ({ ...prev, pullups: true}));
+      }
+      if (h) {
+        setHeadpress(h);
+        setLocked(prev => ({ ...prev, headpress: true}))
       }
     };
     loadPBs();
@@ -60,6 +75,8 @@ export default function PersonalBestsScreen() {
     if (key === 'bench') setBench('');
     if (key === 'squat') setSquat('');
     if (key === 'deadlift') setDeadlift('');
+    if (key === 'pullups') setPullups('');
+    if (key === 'headpress') setHeadpress('');
   };
 
   const renderPBInput = (
@@ -78,7 +95,7 @@ export default function PersonalBestsScreen() {
         <CustomInput
           style={[styles.pbInput, locked[key] && styles.pbInputLocked]}
           keyboardType="numeric"
-          placeholder="kg"
+          placeholder={key === 'pullups' ? '(number)' : '(kg)'}
           placeholderTextColor="#000"
           value={value}
           editable={!locked[key]}
@@ -132,9 +149,11 @@ export default function PersonalBestsScreen() {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
         <CustomLabel>Personal Bests</CustomLabel>
-        {renderPBInput('Bench', bench, setBench, 'bench', require('../../assets/images/bench-press.png'))}
+        {renderPBInput('Bench Press', bench, setBench, 'bench', require('../../assets/images/benchpress.png'))}
         {renderPBInput('Squat', squat, setSquat, 'squat', require('../../assets/images/squat.png'))}
+        {renderPBInput('Overhead Press', headpress, setHeadpress, 'headpress', require('../../assets/images/headpress.png'))}
         {renderPBInput('Deadlift', deadlift, setDeadlift, 'deadlift', require('../../assets/images/deadlift.png'))}
+        {renderPBInput('Pull-ups', pullups, setPullups, 'pullups', require('../../assets/images/pullups.png'))}
       </KeyboardAvoidingView>
     </LinearGradient>
   );

@@ -5,18 +5,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  // Dimensions,
-  Image,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
+import BackButton from '@/components/BackButton';
+import SmallButton from '@/components/SmallButton';
 
-// const screenHeight = Dimensions.get('window').height;
 const MAX_LAPS = 7;
 
 export default function StopwatchScreen() {
-  const router = useRouter();
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [laps, setLaps] = useState<number[]>([]);
@@ -75,22 +72,25 @@ export default function StopwatchScreen() {
       />
 
       <View style={styles.container}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/MenuScreen')}>
-          <Image source={require('../../assets/images/right-arrow.png')} style={styles.backIcon} />
-        </TouchableOpacity>
+      <BackButton />
 
         <Text style={styles.timerText}>{formatTime(time)}</Text>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.controlButton} onPress={toggleStartStop}>
-            <Text style={styles.buttonText}>{isRunning ? 'Stop' : 'Start'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.resetButton} onPress={resetTimer}>
-            <Text style={styles.buttonText}>Reset</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.lapButton} onPress={addLap}>
-            <Text style={styles.buttonText}>Lap</Text>
-          </TouchableOpacity>
+          <SmallButton
+          title={isRunning ? 'Stop' : 'Start'}
+          onPress={toggleStartStop}
+          />
+          <SmallButton
+          title='Reset'
+          onPress={resetTimer}
+          variant="red"
+          />
+          <SmallButton
+          title='Lap'
+          onPress={addLap}
+          variant="yellow"
+          />
         </View>
 
         <FlatList
@@ -125,17 +125,6 @@ const styles = StyleSheet.create({
     paddingTop: 120,
     justifyContent: 'flex-start',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 999,
-  },
-  backIcon: {
-    width: 60,
-    height: 60,
-    transform: [{ rotate: '180deg' }],
-  },
   timerText: {
     color: '#ffffff',
     textAlign: 'center',
@@ -147,63 +136,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginTop: 40,
   },
-  controlButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#0ed022',
-    borderColor: 'rgb(0,255,0)',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  resetButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#e45e69',
-    borderColor: '#e6a1a7',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  lapButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#e45e69',
-    borderColor: '#e6a1a7',
-    borderWidth: 3,
-    shadowColor: '#05d328',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'black',
-    fontSize: 18,
-    fontFamily: 'Roboto-Regular',
-  },
   lapList: {
     paddingTop: 30,
     paddingHorizontal: 20,
-    gap: 20,
+    gap: 16,
   },
   lapItem: {
-    backgroundColor: 'lightgreen',
+    backgroundColor: '#ffffff30',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
+    borderColor: '#ffffff33',
+    borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -211,7 +155,7 @@ const styles = StyleSheet.create({
   lapText: {
     fontSize: 18,
     fontFamily: 'Roboto-Regular',
-    color: 'black',
+    color: 'white',
   },
   xButton: {
     width: 26,

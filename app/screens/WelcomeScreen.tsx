@@ -50,6 +50,7 @@ export default function WelcomeScreen() {
             style={styles.background}
             imageStyle={styles.logoImage}
           >
+            
             <View style={styles.container}>
               <CustomInput
                 style={styles.input}
@@ -57,6 +58,7 @@ export default function WelcomeScreen() {
                 onChangeText={checkInputs}
                 placeholder="Enter your name"
               />
+              
 
               <BigButton
                 title="Go!"

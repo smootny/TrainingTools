@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle, TextStyle } from 'react-native';
-
+import * as Haptics from 'expo-haptics';
 interface Props {
   title: string;
   onPress: () => void;
@@ -16,9 +16,17 @@ export default function BigButton({
   style,
   textStyle,
 }: Props) {
+
+  const handlePress = () => {
+    if (!disabled) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    onPress(); 
+  };
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
@@ -46,14 +54,22 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: "#00000",
+    shadowOffset: {
+	  width: 0,
+	  height: 4,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
   active: {
-    backgroundColor: '#19361e',
-    borderColor: '#000000',
-  },
-  disabled: {
     backgroundColor: '#0ed022',
     borderColor: 'rgb(0,255,0)',
+  },
+  disabled: {
+    backgroundColor: '#19361e',
+    borderColor: '#000000',
+    opacity: 0.4
   },
   pressed: {
     opacity: 0.7,
@@ -65,9 +81,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   textActive: {
-    color: '#ffffff',
+    color: '#000000',
   },
   textDisabled: {
-    color: '#000000',
+    color: '#ffffff',
   },
 });

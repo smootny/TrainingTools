@@ -91,7 +91,7 @@ export default function NoteDetailsScreen() {
               variant="red"
               /> 
               <SmallButton
-              title="Start!"
+              title="Add"
               onPress={handleSave}
               disabled={!inputsFilled}
               variant='green'

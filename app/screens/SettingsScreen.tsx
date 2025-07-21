@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import BackButton from '@/components/BackButton';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -110,9 +111,7 @@ export default function SettingsScreen() {
 
   return (
     <LinearGradient colors={['#35e74d', 'black']} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/MenuScreen')}>
-        <Image source={require('../../assets/images/right-arrow.png')} style={styles.backIcon} />
-      </TouchableOpacity>
+      <BackButton />
 
       <View style={styles.inputContainer}>
         <TouchableOpacity style={styles.profilePicDiv} onPress={handleChoosePhoto}>
@@ -190,17 +189,6 @@ const styles = StyleSheet.create({
   gradient: { 
     flex: 1 
   },
-  backButton: { 
-    position: 'absolute', 
-    top: 50, 
-    left: 20, 
-    zIndex: 999 
-  },
-  backIcon: { 
-    width: 60, 
-    height: 60, 
-    transform: [{ rotate: '180deg' }] 
-  },
   inputContainer: { 
     flex: 1, 
     paddingTop: 100, 
@@ -221,6 +209,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
   photo: { 
     height: '100%', 
