@@ -196,6 +196,8 @@ const styles = StyleSheet.create({
   },
   pbInputLocked: {
     backgroundColor: '#00c851',
-    color: 'white',
+    color: 'black',
+    fontFamily: 'Roboto-Regular',
+    fontSize: 18,
   },
 });

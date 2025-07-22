@@ -214,10 +214,10 @@ const styles = StyleSheet.create({
   genderImageWrapper: {
     width: 100,
     height: 100,
-    borderRadius: 16,
+    borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#587458',
+    backgroundColor: 'rgba(88, 116, 88, 0.5)',
     borderWidth: 2,
     borderColor: 'white',
     opacity: 0.6,
@@ -227,8 +227,8 @@ const styles = StyleSheet.create({
     opacity: 1,
     shadowColor: '#00FF66',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 12,
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
   },
   genderImage: {
     width: 60,

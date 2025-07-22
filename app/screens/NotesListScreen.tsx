@@ -99,6 +99,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 40,
-    // paddingVertical: 60,
   }
 });
