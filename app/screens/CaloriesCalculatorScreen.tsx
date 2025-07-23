@@ -158,7 +158,6 @@ const styles = StyleSheet.create({
   },
   totalContainer: {
     flexDirection: 'row',
-    // alignItems: 'center',
     alignSelf: 'center',
     gap: 10,
     paddingBottom: 50,

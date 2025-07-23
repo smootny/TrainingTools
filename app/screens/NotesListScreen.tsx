@@ -38,7 +38,7 @@ export default function NotesListScreen() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={30}
+          keyboardVerticalOffset={20}
           style={styles.wrapper}
         >
           <BackButton />
