@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     
   },
   icon: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     marginBottom: 8,
   },
   label: {

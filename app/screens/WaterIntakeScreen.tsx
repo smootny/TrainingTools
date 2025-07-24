@@ -81,6 +81,7 @@ export default function WaterIntakeScreen() {
 
             {!showProgress ? (
               <View style={styles.inputBox}>
+                <CustomLabel style={styles.genderQuestion}>What is your gender?</CustomLabel>
                 <View style={styles.genderContainer}>
                   <TouchableOpacity
                     onPress={() => setGender('male')}
@@ -102,7 +103,7 @@ export default function WaterIntakeScreen() {
                   keyboardType="numeric"
                   value={age}
                   onChangeText={setAge}
-                  placeholder="(number)"
+                  placeholder="(age)"
                 />
                 <CustomLabel>How much do you weight?</CustomLabel>
                 <CustomInput
@@ -234,4 +235,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
   },
+  genderQuestion: {
+    paddingBottom: 10
+  }
 });

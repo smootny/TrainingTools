@@ -155,7 +155,7 @@ export default function ProgressBarScreen() {
                 </View>
               ))}
 
-              <View style={{ alignItems: 'center', marginTop: 20 }}>
+              <View style={{ alignItems: 'center', marginTop: 80 }}>
               <BigButton
                 title="Start!"
                 onPress={startCountdown}
@@ -200,11 +200,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: 120,
-    paddingBottom: 140,
-    paddingHorizontal: 22,
   },
   inputBlock: {
-    marginBottom: 22,
+    marginBottom: 30,
   },
   input: {
     alignSelf: 'center'
