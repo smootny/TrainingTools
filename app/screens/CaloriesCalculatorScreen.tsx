@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  TouchableWithoutFeedback,
+  Keyboard
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,6 +29,7 @@ export default function CaloriesCalculatorScreen() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [caloriesInputFilled, setCaloriesInputFilled] = useState(false);
+  const isAtLimit = meals.length >= 6;
 
   useEffect(() => {
     const valid = inputCalories !== '' && Number(inputCalories) > 0;
@@ -52,7 +55,7 @@ export default function CaloriesCalculatorScreen() {
 
   const addCalories = () => {
     const calories = parseInt(inputCalories);
-    if (!isNaN(calories)) {
+    if (!isNaN(calories) && !isAtLimit) {
       const newMeal: Meal = {
         id: Date.now().toString(),
         calories,
@@ -87,6 +90,7 @@ export default function CaloriesCalculatorScreen() {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <LinearGradient
       colors={["#35e74d", "black"]}
       start={{ x: 0.5, y: 1 }}
@@ -94,7 +98,7 @@ export default function CaloriesCalculatorScreen() {
       style={styles.gradient}
     >
       <BackButton />
-
+      
       <View style={styles.container}>
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total:</Text>
@@ -116,7 +120,7 @@ export default function CaloriesCalculatorScreen() {
             title="Add"
             onPress={addCalories}
             variant="green"
-            disabled={!caloriesInputFilled}
+            disabled={!caloriesInputFilled || isAtLimit}
           />
         </View>
 
@@ -143,8 +147,15 @@ export default function CaloriesCalculatorScreen() {
             </View>
           )}
         />
+          {isAtLimit && (
+        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 18 }}>
+          Max 6 meals allowed per day.
+        </Text>
+      )}
       </View>
+    
     </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 

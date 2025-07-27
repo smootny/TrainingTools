@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    marginTop: 40,
+    marginTop: 30,
   },
   waterDisplay: {
     fontSize: 18,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginBottom: 50,
+    marginBottom: 30,
   },
   genderImageWrapper: {
     width: 100,

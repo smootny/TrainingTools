@@ -135,7 +135,7 @@ export default function ProgressBarScreen() {
          <BackButton />
 
           {!isDebounceActive && countdown === 0 && (
-            <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+            <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} >
               {[
                 { label: 'How much time you need for excentric move?', value: fillTime, setter: setFillTime },
                 { label: 'How much time you need for pause?', value: stayTime, setter: setStayTime },
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     paddingTop: 120,
   },
   inputBlock: {
-    marginBottom: 30,
+    marginBottom: 24,
   },
   input: {
     alignSelf: 'center'

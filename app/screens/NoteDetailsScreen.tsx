@@ -61,7 +61,7 @@ export default function NoteDetailsScreen() {
         <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={30}
+          keyboardVerticalOffset={10}
         >
           <View style={styles.form}>
             <CustomLabel style={styles.label}>Title</CustomLabel>
@@ -133,10 +133,12 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 10,
     marginBottom: 20,
+    paddingHorizontal: 2
   },
   textarea: {
     height: 120,
     borderRadius: 10,
+    paddingHorizontal: 2
   },
   buttonContainer: {
     flexDirection: 'row',

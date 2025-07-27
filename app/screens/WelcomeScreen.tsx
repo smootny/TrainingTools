@@ -57,6 +57,10 @@ export default function WelcomeScreen() {
                 value={name}
                 onChangeText={checkInputs}
                 placeholder="Enter your name"
+                returnKeyType="done"
+                onSubmitEditing={() => {
+                  if (inputsFilled) goToMenuPage();
+                }}
               />
               
 

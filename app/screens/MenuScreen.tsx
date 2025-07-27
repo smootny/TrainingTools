@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 
 const menuItems = [
   { label: 'Training', image: require('../../assets/images/exercise.png'), route: 'screens/ProgressBarScreen' },
@@ -44,10 +45,16 @@ export default function MenuScreen() {
       router.push(route);
     };
 
+    const handlePress = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      onPressIn(); 
+    };
+  
+
     return (
       <Animated.View key={label} style={[styles.buttonWrapper, { transform: [{ scale }] }]}>
         <Pressable
-          onPressIn={onPressIn}
+          onPressIn={handlePress}
           onPressOut={onPressOut}
           style={styles.button}
         >
