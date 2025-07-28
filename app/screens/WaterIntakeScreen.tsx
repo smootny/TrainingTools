@@ -4,11 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
   Keyboard,
-  Platform,
-  ScrollView,
   Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,6 +15,7 @@ import CustomInput from '@/components/CustomInput';
 import CustomLabel from '@/components/CustomLabel';
 import BigButton from '@/components/BigButton';
 import SmallButton from '@/components/SmallButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function WaterIntakeScreen() {
   const [gender, setGender] = useLocalStorageState<'male' | 'female'>('gender', 'male');
@@ -47,6 +44,7 @@ export default function WaterIntakeScreen() {
     setTotalWaterIntake(total);
     setDrankWater(0);
     setShowProgress(true);
+    Keyboard.dismiss();
   };
 
   const updateProgress = () => {
@@ -54,6 +52,7 @@ export default function WaterIntakeScreen() {
     if (value > 0) {
       setDrankWater((prev) => Math.min(prev + value, totalWaterIntake));
       setInputWater('');
+      Keyboard.dismiss();
     }
   };
 
@@ -70,116 +69,102 @@ export default function WaterIntakeScreen() {
 
   return (
     <LinearGradient colors={["#35e74d", "black"]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={10}
-        >
-          <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <BackButton />
-
-            {!showProgress ? (
-              <View style={styles.inputBox}>
-                <CustomLabel style={styles.genderQuestion}>What is your gender?</CustomLabel>
-                <View style={styles.genderContainer}>
-                  <TouchableOpacity
-                    onPress={() => setGender('male')}
-                    style={[styles.genderImageWrapper, gender === 'male' && styles.genderSelected]}
-                  >
-                    <Image source={require('../../assets/images/male.png')}  style={styles.genderImage} resizeMode="contain" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setGender('female')}
-                    style={[styles.genderImageWrapper, gender === 'female' && styles.genderSelected]}
-                  >
-                    <Image source={require('../../assets/images/female.png')}  style={styles.genderImage} resizeMode="contain" />
-                  </TouchableOpacity>
-                </View>
-
-                <CustomLabel>How old are you?</CustomLabel>
-                <CustomInput
-                  style={styles.input}
-                  keyboardType="numeric"
-                  value={age}
-                  onChangeText={setAge}
-                  placeholder="(age)"
-                />
-                <CustomLabel>How much do you weight?</CustomLabel>
-                <CustomInput
-                  style={styles.input}
-                  keyboardType="numeric"
-                  value={weight}
-                  onChangeText={setWeight}
-                  placeholder="(kg)"
-                />
-                <BigButton
-                  style={styles.button}
-                  title="Confirm!"
-                  onPress={calculateWaterIntake}
-                  disabled={!inputsFilled}
-                />
-              </View>
-            ) : (
-              <View style={styles.progressBox}>
-                <Text style={styles.waterDisplay}>You should drink {totalWaterIntake} ml of water daily.</Text>
-                <AnimatedCircularProgress
-                  style={styles.circle}
-                  size={200}
-                  width={16}
-                  fill={percentage}
-                  tintColor="#78C000"
-                  backgroundColor="#C7E596"
-                  rotation={0}
-                  lineCap="round"
-                  duration={600}
+      <BackButton />
+      {!showProgress ? (
+        <>
+          <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" enableOnAndroid>
+            <View style={styles.inputBox}>
+              <CustomLabel style={styles.genderQuestion}>What is your gender?</CustomLabel>
+              <View style={styles.genderContainer}>
+                <TouchableOpacity
+                  onPress={() => setGender('male')}
+                  style={[styles.genderImageWrapper, gender === 'male' && styles.genderSelected]}
                 >
-                  {() => <Text style={styles.percentText}>{Math.floor(percentage)}%</Text>}
-                </AnimatedCircularProgress>
-                <CustomLabel>How much water did you drink today?</CustomLabel>
-                <CustomInput
-                  style={styles.input}
-                  keyboardType="numeric"
-                  placeholder="(ml)"
-                  value={inputWater}
-                  onChangeText={setInputWater}
-                />
-                <View style={{ flexDirection: 'row', gap: 16, marginTop: 20 }}>
-                  <SmallButton
-                  title='Add'
-                  onPress={updateProgress}
-                  disabled={!waterInputFilled}
-                  />
-                  <SmallButton
-                  title='Reset'
-                  onPress={resetProgress}
-                  variant="red"
-                  />
-                  <SmallButton
-                  title='Change'
-                  onPress={handleChangeInputs}
-                  variant="yellow"
-                  />
-                </View>
+                  <Image source={require('../../assets/images/male.png')} style={styles.genderImage} resizeMode="contain" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setGender('female')}
+                  style={[styles.genderImageWrapper, gender === 'female' && styles.genderSelected]}
+                >
+                  <Image source={require('../../assets/images/female.png')} style={styles.genderImage} resizeMode="contain" />
+                </TouchableOpacity>
               </View>
-            )}
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+
+              <CustomLabel>How old are you?</CustomLabel>
+              <CustomInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={age}
+                onChangeText={setAge}
+                placeholder="(age)"
+              />
+              <CustomLabel>How much do you weight?</CustomLabel>
+              <CustomInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={weight}
+                onChangeText={setWeight}
+                placeholder="(kg)"
+              />
+            </View>
+          </KeyboardAwareScrollView>
+          <View style={styles.footer}>
+            <BigButton
+              title="Confirm!"
+              onPress={calculateWaterIntake}
+              disabled={!inputsFilled}
+            />
+          </View>
+        </>
+      ) : (
+        <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" enableOnAndroid>
+          <View style={styles.progressBox}>
+            <Text style={styles.waterDisplay}>You should drink {totalWaterIntake} ml of water daily.</Text>
+            <AnimatedCircularProgress
+              style={styles.circle}
+              size={200}
+              width={16}
+              fill={percentage}
+              tintColor="#78C000"
+              backgroundColor="#C7E596"
+              rotation={0}
+              lineCap="round"
+              duration={600}
+            >
+              {() => <Text style={styles.percentText}>{Math.floor(percentage)}%</Text>}
+            </AnimatedCircularProgress>
+            <CustomLabel>How much water did you drink today?</CustomLabel>
+            <CustomInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="(ml)"
+              value={inputWater}
+              onChangeText={setInputWater}
+            />
+            <View style={{ flexDirection: 'row', gap: 16, marginTop: 20 }}>
+              <SmallButton title='Add' onPress={updateProgress} disabled={!waterInputFilled} />
+              <SmallButton title='Reset' onPress={resetProgress} variant="red" />
+              <SmallButton title='Change' onPress={handleChangeInputs} variant="yellow" />
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
+      )}
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: { flex: 1 },
+  gradient: { 
+    flex: 1 
+  },
   container: {
-    flexGrow: 1,
+    marginBottom: 20,
     alignItems: 'center',
-    justifyContent: 'space-evenly',
   },
   inputBox: {
     width: '80%',
     alignItems: 'center',
+    marginTop: 180,
   },
   circle: {
     marginTop: 20,
@@ -188,15 +173,13 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 20,
   },
-  button: {
-    marginTop: 30,
-  },
   waterDisplay: {
     fontSize: 18,
     textAlign: 'center',
     fontFamily: 'Roboto-Regular',
     color: 'white',
     marginBottom: 10,
+    marginTop: 140,
   },
   percentText: {
     fontSize: 40,
@@ -236,6 +219,12 @@ const styles = StyleSheet.create({
     height: 60,
   },
   genderQuestion: {
-    paddingBottom: 10
-  }
+    paddingBottom: 10,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 40,
+    width: '100%',
+    alignItems: 'center',
+  },
 });

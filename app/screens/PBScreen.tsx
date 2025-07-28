@@ -8,6 +8,8 @@ import {
   Image,
   Platform,
   ImageSourcePropType,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -135,6 +137,7 @@ export default function PersonalBestsScreen() {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <LinearGradient
       colors={['#35e74d', 'black']}
       start={{ x: 0.5, y: 1 }}
@@ -146,7 +149,7 @@ export default function PersonalBestsScreen() {
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={10}
       >
         <CustomLabel>Personal Bests</CustomLabel>
         {renderPBInput('Bench Press', bench, setBench, 'bench', require('../../assets/images/benchpress.png'))}
@@ -156,6 +159,7 @@ export default function PersonalBestsScreen() {
         {renderPBInput('Pull-ups', pullups, setPullups, 'pullups', require('../../assets/images/pullups.png'))}
       </KeyboardAvoidingView>
     </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -165,6 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    paddingTop: 0
   },
   pbRow: {
     flexDirection: 'row',
