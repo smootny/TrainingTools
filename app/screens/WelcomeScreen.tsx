@@ -13,12 +13,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '@/components/CustomInput';
 import BigButton from '@/components/BigButton';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function WelcomeScreen() {
   const [name, setName] = useState('');
   const [inputsFilled, setInputsFilled] = useState(false);
   const router = useRouter();
-
+  const { theme } = useTheme();
+  
   const checkInputs = (value: string) => {
     setName(value);
     setInputsFilled(value.trim() !== '');
@@ -32,12 +34,8 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#35e74d", "black"]}
-      start={{ x: 0.5, y: 1 }}
-      end={{ x: 0.5, y: 0 }}
-      style={styles.gradient}
-    >
+    <LinearGradient colors={[theme.background, theme.secondary]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           style={styles.flexContainer}

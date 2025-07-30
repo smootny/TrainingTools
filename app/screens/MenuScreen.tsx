@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const menuItems = [
   { label: 'Training', image: require('../../assets/images/exercise.png'), route: 'screens/ProgressBarScreen' },
@@ -24,6 +25,7 @@ const menuItems = [
 
 export default function MenuScreen() {
   const router = useRouter();
+  const { theme } = useTheme();
 
   const renderButton = ({ label, image, route }: any) => {
     const scale = new Animated.Value(1);
@@ -66,12 +68,12 @@ export default function MenuScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#35e74d", "black"]}
-      start={{ x: 0.5, y: 1 }}
-      end={{ x: 0.5, y: 0 }}
-      style={styles.gradient}
-    >
+        <LinearGradient 
+        colors={[theme.background, theme.secondary]} 
+        start={{ x: 0.5, y: 1 }} 
+        end={{ x: 0.5, y: 0 }} 
+        style={styles.gradient}
+        >
       <View style={styles.container}>
         {menuItems.map(renderButton)}
       </View>

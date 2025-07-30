@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { View, ActivityIndicator } from 'react-native';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -17,5 +18,9 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <ThemeProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </ThemeProvider>
+  );
 }

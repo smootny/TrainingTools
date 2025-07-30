@@ -15,7 +15,9 @@ import BackButton from '@/components/BackButton';
 import CustomLabel from '@/components/CustomLabel';
 import CustomInput from '@/components/CustomInput';
 import SmallButton from '@/components/SmallButton';
+import { useTheme
 
+ } from '@/contexts/ThemeContext';
 type Meal = {
   id: string;
   calories: number;
@@ -25,6 +27,7 @@ const STORAGE_KEY_MEALS = 'meals';
 const STORAGE_KEY_TOTAL = 'totalCalories';
 
 export default function CaloriesCalculatorScreen() {
+  const { theme } = useTheme();
   const [inputCalories, setInputCalories] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -92,7 +95,7 @@ export default function CaloriesCalculatorScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <LinearGradient
-      colors={["#35e74d", "black"]}
+      colors={[theme.background, theme.secondary]}
       start={{ x: 0.5, y: 1 }}
       end={{ x: 0.5, y: 0 }}
       style={styles.gradient}

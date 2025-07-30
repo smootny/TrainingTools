@@ -10,6 +10,7 @@ import {
   ImageSourcePropType,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,22 +18,31 @@ import Svg, { Path } from 'react-native-svg';
 import BackButton from '@/components/BackButton';
 import CustomInput from '@/components/CustomInput';
 import CustomLabel from '@/components/CustomLabel';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const PB_KEYS = {
   bench: 'pb_bench',
   squat: 'pb_squat',
   deadlift: 'pb_deadlift',
   pullups: 'pb_pullups',
-  headpress: 'pb_headpress'
+  headpress: 'pb_headpress',
 };
 
 export default function PersonalBestsScreen() {
+  const { theme } = useTheme();
   const [bench, setBench] = useState('');
   const [squat, setSquat] = useState('');
   const [deadlift, setDeadlift] = useState('');
   const [pullups, setPullups] = useState('');
   const [headpress, setHeadpress] = useState('');
-  const [locked, setLocked] = useState({ bench: false, squat: false, deadlift: false, pullups: false, headpress: false });
+  const [locked, setLocked] = useState({
+    bench: false,
+    squat: false,
+    deadlift: false,
+    pullups: false,
+    headpress: false,
+  });
+  // const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   useEffect(() => {
     const loadPBs = async () => {
@@ -42,38 +52,23 @@ export default function PersonalBestsScreen() {
       const p = await AsyncStorage.getItem(PB_KEYS.pullups);
       const h = await AsyncStorage.getItem(PB_KEYS.headpress);
 
-      if (b) {
-        setBench(b);
-        setLocked(prev => ({ ...prev, bench: true }));
-      }
-      if (s) {
-        setSquat(s);
-        setLocked(prev => ({ ...prev, squat: true }));
-      }
-      if (d) {
-        setDeadlift(d);
-        setLocked(prev => ({ ...prev, deadlift: true }));
-      }
-      if (p) {
-        setPullups(p);
-        setLocked(prev => ({ ...prev, pullups: true}));
-      }
-      if (h) {
-        setHeadpress(h);
-        setLocked(prev => ({ ...prev, headpress: true}))
-      }
+      if (b) { setBench(b); setLocked((prev) => ({ ...prev, bench: true })); }
+      if (s) { setSquat(s); setLocked((prev) => ({ ...prev, squat: true })); }
+      if (d) { setDeadlift(d); setLocked((prev) => ({ ...prev, deadlift: true })); }
+      if (p) { setPullups(p); setLocked((prev) => ({ ...prev, pullups: true })); }
+      if (h) { setHeadpress(h); setLocked((prev) => ({ ...prev, headpress: true })); }
     };
     loadPBs();
   }, []);
 
   const savePB = async (key: keyof typeof PB_KEYS, value: string) => {
     await AsyncStorage.setItem(PB_KEYS[key], value);
-    setLocked(prev => ({ ...prev, [key]: true }));
+    setLocked((prev) => ({ ...prev, [key]: true }));
   };
 
   const clearPB = async (key: keyof typeof PB_KEYS) => {
     await AsyncStorage.removeItem(PB_KEYS[key]);
-    setLocked(prev => ({ ...prev, [key]: false }));
+    setLocked((prev) => ({ ...prev, [key]: false }));
     if (key === 'bench') setBench('');
     if (key === 'squat') setSquat('');
     if (key === 'deadlift') setDeadlift('');
@@ -103,11 +98,8 @@ export default function PersonalBestsScreen() {
           editable={!locked[key]}
           onChangeText={setValue}
         />
-        
         <TouchableOpacity
-          onPress={() => {
-            if (!isSaveDisabled) savePB(key, value);
-          }}
+          onPress={() => !isSaveDisabled && savePB(key, value)}
           disabled={isSaveDisabled}
           style={{ opacity: isSaveDisabled ? 0.3 : 1 }}
         >
@@ -138,43 +130,49 @@ export default function PersonalBestsScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <LinearGradient
-      colors={['#35e74d', 'black']}
-      start={{ x: 0.5, y: 1 }}
-      end={{ x: 0.5, y: 0 }}
-      style={styles.gradient}
-    >
-        <BackButton />
-
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={10}
+      <LinearGradient 
+        colors={[theme.background, theme.secondary]}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0 }}
+        style={styles.gradient}
       >
-        <CustomLabel>Personal Bests</CustomLabel>
-        {renderPBInput('Bench Press', bench, setBench, 'bench', require('../../assets/images/benchpress.png'))}
-        {renderPBInput('Squat', squat, setSquat, 'squat', require('../../assets/images/squat.png'))}
-        {renderPBInput('Overhead Press', headpress, setHeadpress, 'headpress', require('../../assets/images/headpress.png'))}
-        {renderPBInput('Deadlift', deadlift, setDeadlift, 'deadlift', require('../../assets/images/deadlift.png'))}
-        {renderPBInput('Pull-ups', pullups, setPullups, 'pullups', require('../../assets/images/pullups.png'))}
-      </KeyboardAvoidingView>
-    </LinearGradient>
+        <BackButton />
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={10}
+
+        >
+          <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+            <CustomLabel>Personal Bests</CustomLabel>
+            {renderPBInput('Bench Press', bench, setBench, 'bench', require('../../assets/images/benchpress.png'))}
+            {renderPBInput('Squat', squat, setSquat, 'squat', require('../../assets/images/squat.png'))}
+            {renderPBInput('Overhead Press', headpress, setHeadpress, 'headpress', require('../../assets/images/headpress.png'))}
+            {renderPBInput('Deadlift', deadlift, setDeadlift, 'deadlift', require('../../assets/images/deadlift.png'))}
+            {renderPBInput('Pull-ups', pullups, setPullups, 'pullups', require('../../assets/images/pullups.png'))}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: { flex: 1 },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 0
+  gradient: { 
+    flex: 1 
+  },
+  container: { 
+    flex: 1, 
+    paddingHorizontal: 20 
+  },
+  scrollContent: {
+    paddingTop: 180,
+    paddingBottom: 40,
   },
   pbRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 30,
     gap: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 30,
@@ -182,22 +180,22 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
-  pbIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
+  pbIcon: { 
+    width: 40, 
+    height: 40, 
+    resizeMode: 'contain' 
   },
-  pbLabel: {
-    width: 100,
-    fontSize: 16,
-    color: 'white',
-    fontFamily: 'Roboto-Regular',
+  pbLabel: { 
+    width: 100, 
+    fontSize: 16, 
+    color: 'white', 
+    fontFamily: 'Roboto-Regular' 
   },
-  pbInput: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
-    borderRadius: 10,
+  pbInput: { 
+    flex: 1, 
+    height: 40, 
+    fontSize: 16, 
+    borderRadius: 10 
   },
   pbInputLocked: {
     backgroundColor: '#00c851',

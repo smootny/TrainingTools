@@ -10,10 +10,12 @@ import Svg, { Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import BackButton from '@/components/BackButton';
 import SmallButton from '@/components/SmallButton';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const MAX_LAPS = 7;
 
 export default function StopwatchScreen() {
+  const { theme } = useTheme();
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [laps, setLaps] = useState<number[]>([]);
@@ -63,33 +65,31 @@ export default function StopwatchScreen() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <LinearGradient
-        colors={["#35e74d", "black"]}
-        start={{ x: 0.5, y: 1 }}
-        end={{ x: 0.5, y: 0 }}
-        style={StyleSheet.absoluteFill}
-      />
-
+    <LinearGradient
+      colors={[theme.background, theme.secondary]}
+      start={{ x: 0.5, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+      style={styles.gradient}
+    >
       <View style={styles.container}>
-      <BackButton />
+        <BackButton />
 
-        <Text style={styles.timerText}>{formatTime(time)}</Text>
+        <Text style={[styles.timerText, { color: theme.text }]}>{formatTime(time)}</Text>
 
         <View style={styles.buttonContainer}>
           <SmallButton
-          title={isRunning ? 'Stop' : 'Start'}
-          onPress={toggleStartStop}
+            title={isRunning ? 'Stop' : 'Start'}
+            onPress={toggleStartStop}
           />
           <SmallButton
-          title='Reset'
-          onPress={resetTimer}
-          variant="red"
+            title='Reset'
+            onPress={resetTimer}
+            variant="red"
           />
           <SmallButton
-          title='Lap'
-          onPress={addLap}
-          variant="yellow"
+            title='Lap'
+            onPress={addLap}
+            variant="yellow"
           />
         </View>
 
@@ -99,7 +99,7 @@ export default function StopwatchScreen() {
           contentContainerStyle={styles.lapList}
           renderItem={({ item, index }) => (
             <View style={styles.lapItem}>
-              <Text style={styles.lapText}>{formatTime(item)}</Text>
+              <Text style={[styles.lapText, { color: theme.text }]}>{formatTime(item)}</Text>
               <TouchableOpacity style={styles.xButton} onPress={() => removeLap(index)}>
                 <Svg width={26} height={26} viewBox="0 0 24 24">
                   <Path
@@ -115,18 +115,20 @@ export default function StopwatchScreen() {
           )}
         />
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     paddingTop: 120,
     justifyContent: 'flex-start',
   },
   timerText: {
-    color: '#ffffff',
     textAlign: 'center',
     fontSize: 80,
     fontFamily: 'Roboto-Bold',
@@ -155,7 +157,6 @@ const styles = StyleSheet.create({
   lapText: {
     fontSize: 18,
     fontFamily: 'Roboto-Regular',
-    color: 'white',
   },
   xButton: {
     width: 26,

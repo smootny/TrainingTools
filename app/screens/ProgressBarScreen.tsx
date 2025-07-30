@@ -16,10 +16,13 @@ import BackButton from '@/components/BackButton';
 import CustomInput from '@/components/CustomInput';
 import CustomLabel from '@/components/CustomLabel';
 import BigButton from '@/components/BigButton';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const screenHeight = Dimensions.get('window').height;
 
 export default function ProgressBarScreen() {
+
+  const { theme } = useTheme();
   const progressHeight = useRef(new Animated.Value(0)).current;
   const progressWidth = useRef(new Animated.Value(100)).current;
 
@@ -120,11 +123,11 @@ export default function ProgressBarScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#35e74d", "black"]}
-      start={{ x: 0.5, y: 1 }}
-      end={{ x: 0.5, y: 0 }}
-      style={styles.gradient}
+    <LinearGradient 
+    colors={[theme.background, theme.secondary]} 
+    start={{ x: 0.5, y: 1 }} 
+    end={{ x: 0.5, y: 0 }} 
+    style={styles.gradient}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView

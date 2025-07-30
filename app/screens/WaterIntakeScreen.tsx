@@ -16,8 +16,11 @@ import CustomLabel from '@/components/CustomLabel';
 import BigButton from '@/components/BigButton';
 import SmallButton from '@/components/SmallButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useTheme
 
+ } from '@/contexts/ThemeContext';
 export default function WaterIntakeScreen() {
+  const { theme } = useTheme();
   const [gender, setGender] = useLocalStorageState<'male' | 'female'>('gender', 'male');
   const [age, setAge] = useLocalStorageState<string>('age', '');
   const [weight, setWeight] = useLocalStorageState<string>('weight', '');
@@ -68,7 +71,12 @@ export default function WaterIntakeScreen() {
   const percentage = totalWaterIntake ? (drankWater / totalWaterIntake) * 100 : 0;
 
   return (
-    <LinearGradient colors={["#35e74d", "black"]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
+    <LinearGradient 
+      colors={[theme.background, theme.secondary]}
+      start={{ x: 0.5, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+      style={styles.gradient}
+    >
       <BackButton />
       {!showProgress ? (
         <>

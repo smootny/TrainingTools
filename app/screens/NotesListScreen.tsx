@@ -11,8 +11,11 @@ import BackButton from '../../components/BackButton'
 import CustomInput from '@/components/CustomInput';
 import BigButton from '@/components/BigButton';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
+import { useTheme
 
+ } from '@/contexts/ThemeContext';
 export default function NotesListScreen() {
+  const { theme } = useTheme();
   const router = useRouter();
   const { notes, deleteNote } = useNotesStore();
   const [query, setQuery] = useState('');
@@ -26,7 +29,10 @@ export default function NotesListScreen() {
   });
 
   return (
-    <LinearGradient style={styles.gradient} colors={['#35e74d', 'black']} start={{x:0.5,y:1}} end={{x:0.5,y:0}}>
+    <LinearGradient colors={[theme.background, theme.secondary]}
+    start={{ x: 0.5, y: 1 }}
+    end={{ x: 0.5, y: 0 }}
+    style={styles.gradient}>
       <BackButton />
       <CustomInput
         style={styles.input}

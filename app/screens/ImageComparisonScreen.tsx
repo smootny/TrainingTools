@@ -12,10 +12,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackButton from '@/components/BackButton';
 import CustomLabel from '@/components/CustomLabel';
 import SmallButton from '@/components/SmallButton';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function ImageComparisonScreen() {
+  const { theme } = useTheme();
   const [beforeImage, setBeforeImage] = useState<string | null>(null);
   const [afterImage, setAfterImage] = useState<string | null>(null);
   const [sliderValue, setSliderValue] = useState<number>(50);
@@ -45,7 +47,12 @@ export default function ImageComparisonScreen() {
   };
 
   return (
-    <LinearGradient colors={["#35e74d", "black"]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
+    <LinearGradient 
+      colors={[theme.background, theme.secondary]}
+      start={{ x: 0.5, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+      style={styles.gradient}
+    >
       <BackButton />
       
       <View style={styles.centeredWrapper}>

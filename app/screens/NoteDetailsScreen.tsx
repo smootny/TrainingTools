@@ -13,8 +13,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomInput from '@/components/CustomInput';
 import CustomLabel from '@/components/CustomLabel';
 import SmallButton from '@/components/SmallButton';
+import { useTheme
 
+ } from '@/contexts/ThemeContext';
 export default function NoteDetailsScreen() {
+  const { theme } = useTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { notes, addNote, updateNote } = useNotesStore();
@@ -52,7 +55,7 @@ export default function NoteDetailsScreen() {
 
   return (
     <LinearGradient
-      colors={['#35e74d', 'black']}
+      colors={[theme.background, theme.secondary]}
       start={{ x: 0.5, y: 1 }}
       end={{ x: 0.5, y: 0 }}
       style={styles.gradient}
