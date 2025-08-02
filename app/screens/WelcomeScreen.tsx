@@ -14,12 +14,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '@/components/CustomInput';
 import BigButton from '@/components/BigButton';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
 export default function WelcomeScreen() {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [inputsFilled, setInputsFilled] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
+  const { playButtonSound } = useSound()
   
   const checkInputs = (value: string) => {
     setName(value);
@@ -28,6 +32,7 @@ export default function WelcomeScreen() {
 
   const goToMenuPage = async () => {
     if (inputsFilled) {
+      playButtonSound();
       await AsyncStorage.setItem('userName', name);
       router.replace('/screens/MenuScreen');
     }
@@ -50,20 +55,18 @@ export default function WelcomeScreen() {
           >
             
             <View style={styles.container}>
-              <CustomInput
-                style={styles.input}
-                value={name}
-                onChangeText={checkInputs}
-                placeholder="Enter your name"
-                returnKeyType="done"
-                onSubmitEditing={() => {
-                  if (inputsFilled) goToMenuPage();
-                }}
-              />
+            <CustomInput
+              style={{ marginTop: 420, marginBottom: 40 }}
+              value={name}
+              onChangeText={checkInputs}
+              placeholder= {t('enter_name')}
+              returnKeyType="done"
+              onSubmitEditing={() => inputsFilled && goToMenuPage()}
+            />
               
 
               <BigButton
-                title="Go!"
+                title={t('go')}
                 onPress={goToMenuPage}
                 disabled={!inputsFilled}
               />
