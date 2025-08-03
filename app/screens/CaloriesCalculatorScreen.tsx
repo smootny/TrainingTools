@@ -15,9 +15,10 @@ import BackButton from '@/components/BackButton';
 import CustomLabel from '@/components/CustomLabel';
 import CustomInput from '@/components/CustomInput';
 import SmallButton from '@/components/SmallButton';
-import { useTheme
+import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
- } from '@/contexts/ThemeContext';
 type Meal = {
   id: string;
   calories: number;
@@ -27,6 +28,8 @@ const STORAGE_KEY_MEALS = 'meals';
 const STORAGE_KEY_TOTAL = 'totalCalories';
 
 export default function CaloriesCalculatorScreen() {
+  const { eatAddSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [inputCalories, setInputCalories] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
@@ -59,6 +62,7 @@ export default function CaloriesCalculatorScreen() {
   const addCalories = () => {
     const calories = parseInt(inputCalories);
     if (!isNaN(calories) && !isAtLimit) {
+      eatAddSound();
       const newMeal: Meal = {
         id: Date.now().toString(),
         calories,
@@ -104,27 +108,27 @@ export default function CaloriesCalculatorScreen() {
       
       <View style={styles.container}>
         <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalValue}>{totalAmount} kcal</Text>
+          <Text style={[styles.totalLabel, {color: theme.text}]}>{t('total')}:</Text>
+          <Text style={[styles.totalValue, {color: theme.text}]}>{totalAmount} kcal</Text>
         </View>
 
-        <CustomLabel>How many calories did you eat today?</CustomLabel>
+        <CustomLabel>{t('calories')}</CustomLabel>
         <CustomInput
           keyboardType="numeric"
           value={inputCalories}
           onChangeText={setInputCalories}
-          placeholder="(kcal)"
+          placeholder={t('input_calories')}
           style={styles.input}
         />
 
         <View style={styles.buttonGroup}>
-          <SmallButton title="Reset" onPress={resetTotal} variant="red" />
-          <SmallButton
-            title="Add"
+        <SmallButton
+            title={t('add_button')}
             onPress={addCalories}
             variant="green"
             disabled={!caloriesInputFilled || isAtLimit}
           />
+          <SmallButton title={t('reset_button')} onPress={resetTotal} variant="red" />
         </View>
 
         <FlatList
@@ -133,8 +137,8 @@ export default function CaloriesCalculatorScreen() {
           contentContainerStyle={styles.mealList}
           renderItem={({ item, index }) => (
             <View style={styles.mealItem}>
-              <Text style={styles.mealText}>
-                {index + 1}. Meal - {item.calories} kcal
+              <Text style={[styles.mealText, {color: theme.text}]}>
+                {index + 1}. {t('meal')} - {item.calories} kcal
               </Text>
               <TouchableOpacity onPress={() => removeMeal(item.id)} style={styles.xButton}>
                 <Svg width={26} height={26} viewBox="0 0 24 24">
@@ -150,9 +154,9 @@ export default function CaloriesCalculatorScreen() {
             </View>
           )}
         />
-          {isAtLimit && (
+          {isAtLimit && ( 
         <Text style={{ color: 'red', textAlign: 'center', marginBottom: 18 }}>
-          Max 6 meals allowed per day.
+          {t('max_meals')}
         </Text>
       )}
       </View>

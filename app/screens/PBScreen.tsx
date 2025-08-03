@@ -19,6 +19,8 @@ import BackButton from '@/components/BackButton';
 import CustomInput from '@/components/CustomInput';
 import CustomLabel from '@/components/CustomLabel';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
 const PB_KEYS = {
   bench: 'pb_bench',
@@ -29,6 +31,8 @@ const PB_KEYS = {
 };
 
 export default function PersonalBestsScreen() {
+  const { approveCheckSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [bench, setBench] = useState('');
   const [squat, setSquat] = useState('');
@@ -42,7 +46,6 @@ export default function PersonalBestsScreen() {
     pullups: false,
     headpress: false,
   });
-  // const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   useEffect(() => {
     const loadPBs = async () => {
@@ -62,6 +65,7 @@ export default function PersonalBestsScreen() {
   }, []);
 
   const savePB = async (key: keyof typeof PB_KEYS, value: string) => {
+    approveCheckSound();
     await AsyncStorage.setItem(PB_KEYS[key], value);
     setLocked((prev) => ({ ...prev, [key]: true }));
   };
@@ -90,9 +94,9 @@ export default function PersonalBestsScreen() {
         <Image source={iconSource} style={styles.pbIcon} />
         <Text style={styles.pbLabel}>{label}</Text>
         <CustomInput
-          style={[styles.pbInput, locked[key] && styles.pbInputLocked]}
+          style={[styles.pbInput, locked[key] && theme.pbInputLocked]}
           keyboardType="numeric"
-          placeholder={key === 'pullups' ? '(number)' : '(kg)'}
+          placeholder={key === 'pullups' ? `${t('input_number')}` : `${t('input_kilograms')}`}
           placeholderTextColor="#000"
           value={value}
           editable={!locked[key]}
@@ -141,15 +145,14 @@ export default function PersonalBestsScreen() {
           style={styles.container}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={10}
-
         >
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-            <CustomLabel>Personal Bests</CustomLabel>
-            {renderPBInput('Bench Press', bench, setBench, 'bench', require('../../assets/images/benchpress.png'))}
-            {renderPBInput('Squat', squat, setSquat, 'squat', require('../../assets/images/squat.png'))}
-            {renderPBInput('Overhead Press', headpress, setHeadpress, 'headpress', require('../../assets/images/headpress.png'))}
-            {renderPBInput('Deadlift', deadlift, setDeadlift, 'deadlift', require('../../assets/images/deadlift.png'))}
-            {renderPBInput('Pull-ups', pullups, setPullups, 'pullups', require('../../assets/images/pullups.png'))}
+            <CustomLabel>{t('personal_bests')}</CustomLabel>
+            {renderPBInput(t('bench'), bench, setBench, 'bench', require('../../assets/images/benchpress.png'))}
+            {renderPBInput(t('squat'), squat, setSquat, 'squat', require('../../assets/images/squat.png'))}
+            {renderPBInput(t('overhead'), headpress, setHeadpress, 'headpress', require('../../assets/images/headpress.png'))}
+            {renderPBInput(t('deadlift'), deadlift, setDeadlift, 'deadlift', require('../../assets/images/deadlift.png'))}
+            {renderPBInput(t('pull_ups'), pullups, setPullups, 'pullups', require('../../assets/images/pullups.png'))}
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
@@ -196,11 +199,5 @@ const styles = StyleSheet.create({
     height: 40, 
     fontSize: 16, 
     borderRadius: 10 
-  },
-  pbInputLocked: {
-    backgroundColor: '#00c851',
-    color: 'black',
-    fontFamily: 'Roboto-Regular',
-    fontSize: 18,
   },
 });

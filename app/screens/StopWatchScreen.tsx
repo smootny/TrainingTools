@@ -11,10 +11,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import BackButton from '@/components/BackButton';
 import SmallButton from '@/components/SmallButton';
 import { useTheme } from '@/contexts/ThemeContext';
-
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 const MAX_LAPS = 7;
 
 export default function StopwatchScreen() {
+  const { confirmButtonSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
@@ -29,6 +32,7 @@ export default function StopwatchScreen() {
 
   const toggleStartStop = () => {
     setIsRunning((prev) => {
+      confirmButtonSound()
       if (!prev) {
         intervalRef.current = setInterval(() => {
           setTime((prevTime) => prevTime + 10);
@@ -78,16 +82,16 @@ export default function StopwatchScreen() {
 
         <View style={styles.buttonContainer}>
           <SmallButton
-            title={isRunning ? 'Stop' : 'Start'}
+            title={isRunning ? `${t('stop_button')}` : `${t('start_button')}`}
             onPress={toggleStartStop}
           />
           <SmallButton
-            title='Reset'
+            title={t('reset_button')}
             onPress={resetTimer}
             variant="red"
           />
           <SmallButton
-            title='Lap'
+            title={t('lap_button')}
             onPress={addLap}
             variant="yellow"
           />

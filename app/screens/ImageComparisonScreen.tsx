@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Image,
   StyleSheet,
   Dimensions,
+  PanResponder,
+  Animated,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,14 +15,40 @@ import BackButton from '@/components/BackButton';
 import CustomLabel from '@/components/CustomLabel';
 import SmallButton from '@/components/SmallButton';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
 const { width: screenWidth } = Dimensions.get('window');
+const COMPARISON_HEIGHT = 400;
 
 export default function ImageComparisonScreen() {
+  const { photoConfirmSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [beforeImage, setBeforeImage] = useState<string | null>(null);
   const [afterImage, setAfterImage] = useState<string | null>(null);
   const [sliderValue, setSliderValue] = useState<number>(50);
+  const pan = useRef(new Animated.Value(50)).current;
+
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderMove: (_, gestureState) => {
+      const containerWidth = screenWidth - 40;
+      const relativeX = gestureState.moveX - 20;
+      const newValue = Math.min(100, Math.max(0, (relativeX / containerWidth) * 100));
+      setSliderValue(newValue);
+      pan.setValue(newValue);
+    },
+  });
+
+  useEffect(() => {
+    pan.addListener(({ value }) => {
+      setSliderValue(value);
+    });
+
+    return () => pan.removeAllListeners();
+  }, [pan]);
 
   useEffect(() => {
     const loadImages = async () => {
@@ -33,6 +61,7 @@ export default function ImageComparisonScreen() {
   }, []);
 
   const pickImage = async (setImage: (uri: string) => void, key: string) => {
+    photoConfirmSound();
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -56,43 +85,85 @@ export default function ImageComparisonScreen() {
       <BackButton />
       
       <View style={styles.centeredWrapper}>
-        <CustomLabel>Lets see your progress!</CustomLabel>
-        <View style={styles.wrapper}>
-          <View style={styles.imageContainer}>
-            {beforeImage && (
-              <Image source={{ uri: beforeImage }} style={styles.imageFull} resizeMode="cover" />
-            )}
-            {afterImage && (
-              <View style={[styles.imageOverlay, { width: `${sliderValue}%` }]}> 
-                <Image source={{ uri: afterImage }} style={styles.imageFull} resizeMode="cover" />
+        <CustomLabel>{t('progress')}</CustomLabel>
+        
+        <View style={styles.comparisonWrapper} {...panResponder.panHandlers}>
+          {beforeImage && (
+            <Image 
+              source={{ uri: beforeImage }} 
+              style={styles.imageBase} 
+              resizeMode="cover"
+            />
+          )}
+          
+          {afterImage && (
+            <Animated.View 
+              style={[
+                styles.imageOverlayContainer, 
+                { 
+                  width: pan.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%']
+                  })
+                }
+              ]}
+            >
+              <Image 
+                source={{ uri: afterImage }} 
+                style={styles.imageOverlay}
+                resizeMode="cover"
+              />
+            </Animated.View>
+          )}
+
+          {beforeImage && afterImage && (
+            <Animated.View 
+              style={[
+                styles.dragLine, 
+                { 
+                  left: pan.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%']
+                  })
+                }
+              ]}
+            >
+              <View style={styles.dragLineTop} />
+              <View style={styles.dragHandle}>
               </View>
-            )}
-          </View>
+              <View style={styles.dragLineBottom} />
+            </Animated.View>
+          )}
+          
+          {/* Hidden Slider */}
           {beforeImage && afterImage && (
             <Slider
               style={styles.slider}
               minimumValue={0}
               maximumValue={100}
               value={sliderValue}
-              onValueChange={(value: number) => setSliderValue(value)}
-              minimumTrackTintColor="#15d798"
-              maximumTrackTintColor="#999"
-              thumbTintColor="#15d798"
+              onValueChange={(value) => {
+                setSliderValue(value);
+                pan.setValue(value);
+              }}
+              minimumTrackTintColor="transparent"
+              maximumTrackTintColor="transparent"
+              thumbTintColor="#e45e69"
             />
           )}
         </View>
 
         <View style={styles.buttonContainer}>
           <SmallButton
-           title='Before'
-           onPress={() => pickImage(setBeforeImage, 'beforeImage')}
-           variant="yellow"
-           />
-           <SmallButton
-           title='After'
-           onPress={() => pickImage(setAfterImage, 'afterImage')}
-           variant="yellow"
-           />
+            title={t('before_button')}
+            onPress={() => pickImage(setBeforeImage, 'beforeImage')}
+            variant="yellow"
+          />
+          <SmallButton
+            title={t('after_button')}
+            onPress={() => pickImage(setAfterImage, 'afterImage')}
+            variant="yellow"
+          />
         </View>
       </View>
     </LinearGradient>
@@ -109,11 +180,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 80,
   },
-  wrapper: {
+  comparisonWrapper: {
     width: screenWidth - 40,
-    height: 400,
-    position: 'relative',
-    overflow: 'hidden',
+    height: COMPARISON_HEIGHT,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
@@ -122,26 +191,60 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
+    overflow: 'hidden',
   },
-  imageContainer: {
-    width: '100%',
-    height: '100%',
-  },
-  imageFull: {
-    width: '100%',
-    height: '100%',
-  },
-  imageOverlay: {
+  imageBase: {
     position: 'absolute',
-    top: 0,
-    left: 0,
+    width: '100%',
+    height: '100%',
+  },
+  imageOverlayContainer: {
+    position: 'absolute',
     height: '100%',
     overflow: 'hidden',
   },
+  imageOverlay: {
+    width: screenWidth - 40,
+    height: '100%',
+  },
   slider: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    zIndex: 3,
+  },
+  dragLine: {
+    position: 'absolute',
+    width: 3,
+    height: '100%',
+    backgroundColor: 'skyblue',
+    zIndex: 2,
+  },
+  dragLineTop: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: COMPARISON_HEIGHT / 2 - 25,
+    backgroundColor: 'skyblue',
+  },
+  dragLineBottom: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
+    height: COMPARISON_HEIGHT / 2 - 25,
+    backgroundColor: 'skyblue',
+  },
+  dragHandle: {
+    position: 'absolute',
+    top: '50%',
+    left: -20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: 'skyblue',
+    backgroundColor: '#FF4C4C',
+    transform: [{ translateY: -20 }],
   },
   buttonContainer: {
     flexDirection: 'row',

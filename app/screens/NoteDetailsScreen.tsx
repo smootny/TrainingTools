@@ -13,10 +13,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomInput from '@/components/CustomInput';
 import CustomLabel from '@/components/CustomLabel';
 import SmallButton from '@/components/SmallButton';
-import { useTheme
+import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
- } from '@/contexts/ThemeContext';
 export default function NoteDetailsScreen() {
+  const { addNoteSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -45,6 +48,7 @@ export default function NoteDetailsScreen() {
       updateNote(parsedId, { title, body });
     } else {
       addNote({ title, body });
+      addNoteSound();
     }
     router.back();
   };
@@ -67,21 +71,21 @@ export default function NoteDetailsScreen() {
           keyboardVerticalOffset={10}
         >
           <View style={styles.form}>
-            <CustomLabel style={styles.label}>Title</CustomLabel>
+            <CustomLabel style={styles.label}>{t('note_title')}</CustomLabel>
             
             <CustomInput
             style={styles.input}
             value={title}
-            placeholder="Enter title"
+            placeholder={t('input_title')}
             onChangeText={setTitle}
             placeholderTextColor="#ccc"
             />
 
-            <CustomLabel style={styles.label}>Content</CustomLabel>
+            <CustomLabel style={styles.label}>{t('note_content')}</CustomLabel>
             <CustomInput
             style={styles.textarea}
             value={body}
-            placeholder="Enter content"
+            placeholder={t('input_content')}
             onChangeText={setBody}
             placeholderTextColor="#ccc"
             multiline
@@ -89,12 +93,12 @@ export default function NoteDetailsScreen() {
 
             <View style={styles.buttonContainer}>
               <SmallButton
-              title='Cancel'
+              title={t('cancel_button')}
               onPress={handleCancel}
               variant="red"
               /> 
               <SmallButton
-              title="Add"
+              title={t('add_button')}
               onPress={handleSave}
               disabled={!inputsFilled}
               variant='green'

@@ -11,10 +11,13 @@ import BackButton from '../../components/BackButton'
 import CustomInput from '@/components/CustomInput';
 import BigButton from '@/components/BigButton';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
-import { useTheme
+import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
- } from '@/contexts/ThemeContext';
 export default function NotesListScreen() {
+  const { removeNoteSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
   const { notes, deleteNote } = useNotesStore();
@@ -37,7 +40,7 @@ export default function NotesListScreen() {
       <CustomInput
         style={styles.input}
         value={query}
-        placeholder="Search..."
+        placeholder={t('search')}
         onChangeText={setQuery}
         placeholderTextColor="#ccc"
       />
@@ -52,7 +55,10 @@ export default function NotesListScreen() {
             <NoteCard
               title={item.title}
               body={item.body}
-              onDelete={() => deleteNote(item.id)}
+              onDelete={() => {
+                removeNoteSound(); 
+                deleteNote(item.id);
+              }}
               onPress={() => router.push({ pathname: '../screens/NoteDetailsScreen', 
               params: { id: item.id } })}
             />
@@ -60,7 +66,8 @@ export default function NotesListScreen() {
         />
       </View>
       <View style={styles.footer}>
-        <BigButton title="Add" onPress={() => router.push('/screens/NoteDetailsScreen')} />
+        <BigButton title={t('add_button')} onPress={() => {
+        router.push('/screens/NoteDetailsScreen')}} />
       </View>
     </LinearGradient>
   );

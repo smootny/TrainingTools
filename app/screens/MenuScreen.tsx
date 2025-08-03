@@ -11,21 +11,24 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
-const menuItems = [
-  { label: 'Training', image: require('../../assets/images/exercise.png'), route: 'screens/ProgressBarScreen' },
-  { label: 'Stopwatch', image: require('../../assets/images/stopwatch.png'), route: 'screens/StopWatchScreen' },
-  { label: 'Notebook', image: require('../../assets/images/notebook.png'), route: 'screens/NotesListScreen' },
-  { label: 'Calorie Calculator', image: require('../../assets/images/calories-calculator.png'), route: 'screens/CaloriesCalculatorScreen' },
-  { label: 'Water Intake', image: require('../../assets/images/water-bottle.png'), route: 'screens/WaterIntakeScreen' },
-  { label: 'Photo Comparison', image: require('../../assets/images/gallery.png'), route: 'screens/ImageComparisonScreen' },
-  { label: 'My Records', image: require('../../assets/images/trophy.png'), route: 'screens/PBScreen' },
-  { label: 'Settings', image: require('../../assets/images/settings.png'), route: 'screens/SettingsScreen' },
-];
 
 export default function MenuScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { theme } = useTheme();
+
+  const menuItems = [
+    { label: t('training'), image: require('../../assets/images/exercise.png'), route: 'screens/ProgressBarScreen' },
+    { label: t('stopwatch'), image: require('../../assets/images/stopwatch.png'), route: 'screens/StopWatchScreen' },
+    { label: t('notebook'), image: require('../../assets/images/notebook.png'), route: 'screens/NotesListScreen' },
+    { label: t('calorie_calculator'), image: require('../../assets/images/calories-calculator.png'), route: 'screens/CaloriesCalculatorScreen' },
+    { label: t('water_intake'), image: require('../../assets/images/water-bottle.png'), route: 'screens/WaterIntakeScreen' },
+    { label: t('photo_comparison'), image: require('../../assets/images/gallery.png'), route: 'screens/ImageComparisonScreen' },
+    { label: t('my_records'), image: require('../../assets/images/trophy.png'), route: 'screens/PBScreen' },
+    { label: t('settings'), image: require('../../assets/images/settings.png'), route: 'screens/SettingsScreen' },
+  ];
 
   const renderButton = ({ label, image, route }: any) => {
     const scale = new Animated.Value(1);
@@ -52,13 +55,14 @@ export default function MenuScreen() {
       onPressIn(); 
     };
   
+  
 
     return (
       <Animated.View key={label} style={[styles.buttonWrapper, { transform: [{ scale }] }]}>
         <Pressable
           onPressIn={handlePress}
           onPressOut={onPressOut}
-          style={styles.button}
+          style={[styles.tile, {borderColor: theme.tile.borderColor}]}
         >
           <Image source={image} style={styles.icon} resizeMode="contain" />
           <Text style={styles.label}>{label}</Text>
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     margin: 10,
   },
-  button: {
+  tile: {
     width: 130,
     height: 130,
     borderRadius: 20,
@@ -110,7 +114,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.4,
     shadowRadius: 4,
-    borderColor: '#19361e',
     borderWidth: 0.5,
     backgroundColor: 'rgba(255, 255, 255, 1)',
     
