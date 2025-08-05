@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { useSound } from '@/hooks/useSound';
 
 type BackButtonProps = {
   to?: Parameters<ReturnType<typeof useRouter>['push']>[0];
@@ -14,10 +13,8 @@ type BackButtonProps = {
 
 const BackButton: React.FC<BackButtonProps> = ({ to = '/screens/MenuScreen' }) => {
   const router = useRouter();
-  const { backButtonSound } = useSound();
 
   const handlePress = async () => {
-    backButtonSound();
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push(to);
   };

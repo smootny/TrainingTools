@@ -17,7 +17,7 @@ export const useNotesStore = create<NotesStore>((set) => ({
   notes: [],
 
   addNote: (note) => {
-    const newNote: Note = {
+    const newNote: Note = { 
       ...note,
       id: Date.now().toString(),
     };

@@ -16,24 +16,32 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isDark, setIsDark] = useState(false);
+  const [theme, setTheme] = useState(lightTheme);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const loadTheme = async () => {
       const storedTheme = await AsyncStorage.getItem('appTheme');
       if (storedTheme === 'dark') {
         setIsDark(true);
+        setTheme(darkTheme);
+      } else {
+        setIsDark(false);
+        setTheme(lightTheme);
       }
+      setIsReady(true);
     };
     loadTheme();
   }, []);
 
   const toggleTheme = async () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    await AsyncStorage.setItem('appTheme', newTheme ? 'dark' : 'light');
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    setTheme(newIsDark ? darkTheme : lightTheme);
+    await AsyncStorage.setItem('appTheme', newIsDark ? 'dark' : 'light');
   };
 
-  const theme = isDark ? darkTheme : lightTheme;
+  if (!isReady) return null;
 
   return (
     <ThemeContext.Provider value={{ isDark, theme, toggleTheme }}>

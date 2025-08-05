@@ -16,10 +16,13 @@ import CustomLabel from '@/components/CustomLabel';
 import BigButton from '@/components/BigButton';
 import SmallButton from '@/components/SmallButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTheme
+import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useSound } from '@/hooks/useSound';
 
- } from '@/contexts/ThemeContext';
 export default function WaterIntakeScreen() {
+  const { drinkAddSound, confirmButtonSound } = useSound();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [gender, setGender] = useLocalStorageState<'male' | 'female'>('gender', 'male');
   const [age, setAge] = useLocalStorageState<string>('age', '');
@@ -42,6 +45,7 @@ export default function WaterIntakeScreen() {
   }, [inputWater]);
 
   const calculateWaterIntake = () => {
+    confirmButtonSound();
     if (!inputsFilled) return;
     const total = Number(weight) * 30;
     setTotalWaterIntake(total);
@@ -53,6 +57,7 @@ export default function WaterIntakeScreen() {
   const updateProgress = () => {
     const value = Number(inputWater);
     if (value > 0) {
+      drinkAddSound();
       setDrankWater((prev) => Math.min(prev + value, totalWaterIntake));
       setInputWater('');
       Keyboard.dismiss();
@@ -82,7 +87,7 @@ export default function WaterIntakeScreen() {
         <>
           <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" enableOnAndroid>
             <View style={styles.inputBox}>
-              <CustomLabel style={styles.genderQuestion}>What is your gender?</CustomLabel>
+              <CustomLabel style={styles.genderQuestion}>{t('gender')}</CustomLabel>
               <View style={styles.genderContainer}>
                 <TouchableOpacity
                   onPress={() => setGender('male')}
@@ -98,27 +103,27 @@ export default function WaterIntakeScreen() {
                 </TouchableOpacity>
               </View>
 
-              <CustomLabel>How old are you?</CustomLabel>
+              <CustomLabel>{t('old')}</CustomLabel>
               <CustomInput
                 style={styles.input}
                 keyboardType="numeric"
                 value={age}
                 onChangeText={setAge}
-                placeholder="(age)"
+                placeholder={t('input_age')}
               />
-              <CustomLabel>How much do you weight?</CustomLabel>
+              <CustomLabel>{t('weight')}</CustomLabel>
               <CustomInput
                 style={styles.input}
                 keyboardType="numeric"
                 value={weight}
                 onChangeText={setWeight}
-                placeholder="(kg)"
+                placeholder={t('input_kilograms')}
               />
             </View>
           </KeyboardAwareScrollView>
           <View style={styles.footer}>
             <BigButton
-              title="Confirm!"
+              title={t('confirm_button')}
               onPress={calculateWaterIntake}
               disabled={!inputsFilled}
             />
@@ -127,7 +132,7 @@ export default function WaterIntakeScreen() {
       ) : (
         <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" enableOnAndroid>
           <View style={styles.progressBox}>
-            <Text style={styles.waterDisplay}>You should drink {totalWaterIntake} ml of water daily.</Text>
+            <Text style={[styles.waterDisplay, { color: theme.text }]}>{t('water_daily', { amount: totalWaterIntake })}</Text>
             <AnimatedCircularProgress
               style={styles.circle}
               size={200}
@@ -141,18 +146,18 @@ export default function WaterIntakeScreen() {
             >
               {() => <Text style={styles.percentText}>{Math.floor(percentage)}%</Text>}
             </AnimatedCircularProgress>
-            <CustomLabel>How much water did you drink today?</CustomLabel>
+            <CustomLabel>{t('water')}</CustomLabel>
             <CustomInput
               style={styles.input}
               keyboardType="numeric"
-              placeholder="(ml)"
+              placeholder={t('input_water')}
               value={inputWater}
               onChangeText={setInputWater}
             />
             <View style={{ flexDirection: 'row', gap: 16, marginTop: 20 }}>
-              <SmallButton title='Add' onPress={updateProgress} disabled={!waterInputFilled} />
-              <SmallButton title='Reset' onPress={resetProgress} variant="red" />
-              <SmallButton title='Change' onPress={handleChangeInputs} variant="yellow" />
+              <SmallButton title={t('add_button')} onPress={updateProgress} disabled={!waterInputFilled} />
+              <SmallButton title={t('reset_button')} onPress={resetProgress} variant="red" />
+              <SmallButton title={t('change_button')} onPress={handleChangeInputs} variant="yellow" />
             </View>
           </View>
         </KeyboardAwareScrollView>
