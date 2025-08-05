@@ -135,20 +135,19 @@ export default function ImageComparisonScreen() {
             </Animated.View>
           )}
           
-          {/* Hidden Slider */}
           {beforeImage && afterImage && (
             <Slider
               style={styles.slider}
               minimumValue={0}
               maximumValue={100}
               value={sliderValue}
-              onValueChange={(value) => {
+              onValueChange={(value: number) => {
                 setSliderValue(value);
                 pan.setValue(value);
               }}
               minimumTrackTintColor="transparent"
               maximumTrackTintColor="transparent"
-              thumbTintColor="#e45e69"
+              thumbTintColor="transparent"
             />
           )}
         </View>
@@ -211,7 +210,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    zIndex: 3,
+    zIndex: 1,
+    top: 180
   },
   dragLine: {
     position: 'absolute',

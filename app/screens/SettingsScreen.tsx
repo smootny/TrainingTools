@@ -307,9 +307,9 @@ const styles = StyleSheet.create({
     marginTop: 40, 
     alignSelf: 'center' },
   resetText: { 
+    paddingTop: 100,
     fontSize: 18, 
     color: 'red', 
-    fontWeight: '600', 
     fontFamily: 'Roboto-Regular', 
     textAlign: 'center' },
 });

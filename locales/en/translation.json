@@ -1,10 +1,9 @@
 {
-    "welcome": "Welcome!",
     "enter_name": "Enter your name",
     "go": "Go!",
     "training": "Training",
     "excentric": "How much time you need for excentric move?",
-    "pause": "How much time you nned for pause?",
+    "pause": "How much time you need for pause?",
     "izocentric": "How much time you need for izocetric move?",
     "exercise": "How much time you need to prepare for an exercise?",
     "reps": "How many reps you want to do?",
@@ -45,13 +44,13 @@
     "pull_ups": "Pull-ups",
     "settings": "Settings",
     "photo": "Choose Photo",
-    "cool_mode": "Giga Chad",
-    "cooler_mode": "Barbie",
+    "cool_mode": "Cool",
+    "cooler_mode": "Cooler mode",
     "notifications": "Notifications",
     "time": "Time",
     "sound": "Sound",
-    "polish": "Polish",
-    "english": "English",
+    "language_change": "Do you want to change the language?",
+    "polish_english": "English 🇬🇧 / Polish 🇵🇱",
     "reset": "Reset App",
     "input_seconds": "(seconds)",
     "input_number": "(number)",
@@ -64,10 +63,12 @@
     "are_you_sure": "Are you sure",
     "disable": "disable",
     "enable": "enable",
+    "language": "Language",
     "reset_confirm": "Confirm reset app",
     "yes": "yes",
     "no": "no",
     "set": "set",
-    "not_set": "not set"
+    "not_set": "not set",
+    "max_meals": "Stay disciplined. 6 meals are enough!"
   }
   

@@ -4,8 +4,14 @@ import { View, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { initI18n } from '@/config/i18n';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { setupNotificationListeners } from '@/utils/notifications';
 
 export default function RootLayout() {
+  useEffect(() => {
+    const removeListener = setupNotificationListeners();
+    return removeListener;
+  }, []);
+  
   const [fontsLoaded] = useFonts({
     'Roboto-Regular': require('../assets/fonts/Roboto-Regular.ttf'),
     'Roboto-Bold': require('../assets/fonts/Roboto-Bold.ttf'),

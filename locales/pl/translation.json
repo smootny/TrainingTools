@@ -1,5 +1,4 @@
 {
-  "welcome": "Witaj!",
   "enter_name": "Wpisz swoje imię",
   "go": "Start!",
   "training": "Trening",
@@ -45,13 +44,13 @@
   "pull_ups": "Podciągnięcia",
   "settings": "Ustawienia",
   "photo": "Wybierz zdjęcie",
-  "cool_mode": "Giga Chad",
-  "cooler_mode": "Barbie",
+  "cool_mode": "Fajny",
+  "cooler_mode": "Fajniejszy motyw",
   "notifications": "Powiadomienia",
   "time": "Godzina",
   "sound": "Dźwięk",
-  "polish": "Polski",
-  "english": "Angielski",
+  "language_change": "Czy chcesz zmienić język?",
+  "polish_english": "Angielski 🇬🇧 / Polski 🇵🇱",
   "reset": "Zresetuj aplikację",
   "input_seconds": "(sekundy)",
   "input_number": "(ilość)",
@@ -69,5 +68,6 @@
   "yes": "Tak",
   "no": "Nie",
   "set": "Ustaw",
-  "not_set": "Nie ustawione"
+  "not_set": "Nie ustawione",
+  "max_meals": "Zachowaj dyscyplinę. 6 posiłków wystarczy!"
 }
