@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
+import { t } from 'i18next';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,8 +29,8 @@ export async function scheduleDailyNotification(hour: number, minute: number) {
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Halo!👀 Tutaj Twój motywator!',
-      body: 'Woda wypita? Kalorie nabite? To teraz czas na trening! 💪',
+      title: t('notification.title'),
+      body: t('notification.body'),
       sound: true,
     },
     trigger: {

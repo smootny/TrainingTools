@@ -47,6 +47,10 @@
     "cool_mode": "Cool",
     "cooler_mode": "Cooler mode",
     "notifications": "Notifications",
+    "notification": {
+      "title": "Hey!👀 Your motivator is here!",
+      "body": "Water drunk? Calories loaded? Now it's time to train! 💪"
+    },
     "time": "Time",
     "sound": "Sound",
     "language_change": "Do you want to change the language?",

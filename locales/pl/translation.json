@@ -47,6 +47,10 @@
   "cool_mode": "Fajny",
   "cooler_mode": "Fajniejszy motyw",
   "notifications": "Powiadomienia",
+  "notification": {
+    "title": "Halo!👀 Tutaj Twój motywator!",
+    "body": "Woda wypita? Kalorie nabite? To teraz czas na trening! 💪"
+  },
   "time": "Godzina",
   "sound": "Dźwięk",
   "language_change": "Czy chcesz zmienić język?",
