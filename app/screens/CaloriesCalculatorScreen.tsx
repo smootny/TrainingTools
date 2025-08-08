@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     gap: 10,
-    paddingBottom: 50,
+    paddingBottom: 40,
     paddingHorizontal: 20,
   },
   totalLabel: {

@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     marginTop: 40, 
     alignSelf: 'center' },
   resetText: { 
-    paddingTop: 100,
+    paddingTop: 60,
     fontSize: 18, 
     color: 'red', 
     fontFamily: 'Roboto-Regular', 
