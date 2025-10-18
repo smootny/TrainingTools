@@ -8,6 +8,7 @@
     "scheme": "traningtools",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.TraningTools"
@@ -43,6 +44,10 @@
       "expo-localization",
       "expo-audio"
     ],
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
+    },
     "experiments": {
       "typedRoutes": true
     }
