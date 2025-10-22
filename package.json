@@ -5,10 +5,13 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "ios:build": "eas build -p ios --profile production",
+    "ios:submit": "eas submit -p ios --profile production --latest",
+    "ios:release": "npm run ios:build && npm run ios:submit",
+    "ios:preview": "eas build -p ios --profile preview"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -21,7 +24,6 @@
     "@react-navigation/native-stack": "^7.3.10",
     "expo": "~54.0.0",
     "expo-audio": "~1.0.13",
-    "expo-av": "~16.0.7",
     "expo-blur": "~15.0.7",
     "expo-constants": "~18.0.9",
     "expo-dev-client": "~6.0.15",

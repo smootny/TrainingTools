@@ -88,15 +88,15 @@ export default function ImageComparisonScreen() {
         <CustomLabel>{t('progress')}</CustomLabel>
         
         <View style={styles.comparisonWrapper} {...panResponder.panHandlers}>
-          {beforeImage && (
+          {afterImage && (
             <Image 
-              source={{ uri: beforeImage }} 
+              source={{ uri: afterImage }} 
               style={styles.imageBase} 
               resizeMode="cover"
             />
           )}
           
-          {afterImage && (
+          {beforeImage && (
             <Animated.View 
               style={[
                 styles.imageOverlayContainer, 
@@ -109,7 +109,7 @@ export default function ImageComparisonScreen() {
               ]}
             >
               <Image 
-                source={{ uri: afterImage }} 
+                source={{ uri: beforeImage }} 
                 style={styles.imageOverlay}
                 resizeMode="cover"
               />

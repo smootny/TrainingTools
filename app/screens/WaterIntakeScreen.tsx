@@ -85,7 +85,7 @@ export default function WaterIntakeScreen() {
       <BackButton />
       {!showProgress ? (
         <>
-          <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" enableOnAndroid>
+          <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <View style={styles.inputBox}>
               <CustomLabel style={styles.genderQuestion}>{t('gender')}</CustomLabel>
               <View style={styles.genderContainer}>
@@ -130,7 +130,7 @@ export default function WaterIntakeScreen() {
           </View>
         </>
       ) : (
-        <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" enableOnAndroid>
+        <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.progressBox}>
             <Text style={[styles.waterDisplay, { color: theme.text }]}>{t('water_daily', { amount: totalWaterIntake })}</Text>
             <AnimatedCircularProgress

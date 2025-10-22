@@ -4,25 +4,16 @@
     "slug": "TraningTools",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon(1).png",
     "scheme": "traningtools",
     "userInterfaceStyle": "automatic",
+    "platforms": ["ios"],
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.TraningTools"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "permissions": [
-        "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ]
+      "bundleIdentifier": "com.sebastianblazejewski.treningtools",
+      "buildNumber": "1"
     },
     "web": {
       "bundler": "metro",
