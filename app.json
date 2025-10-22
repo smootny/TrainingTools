@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sebastianblazejewski.treningtools",
+      "bundleIdentifier": "com.sebastianblazejewski.trainingtools",
       "buildNumber": "2"
     },
     "web": {
