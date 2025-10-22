@@ -1,15 +1,19 @@
 {
   "expo": {
-    "name": "TraningTools",
-    "slug": "TraningTools",
+    "name": "TrainingTools",
+    "slug": "TrainingTools",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon(1).png",
-    "scheme": "traningtools",
+    "scheme": "trainingtools",
     "userInterfaceStyle": "automatic",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "newArchEnabled": true,
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sebastianblazejewski.treningtools",
@@ -41,6 +45,12 @@
     },
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e4a13ae1-b637-4e52-b182-aedd65e7eb16"
+      }
     }
   }
 }
