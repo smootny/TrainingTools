@@ -1,14 +1,36 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 
 export const useSound = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  const playerWelcome = useAudioPlayer(require('@/assets/sounds/welcome.wav'));
+  const playerSwitch = useAudioPlayer(require('@/assets/sounds/sound-off.wav'));
+  const playerDrink = useAudioPlayer(require('@/assets/sounds/drink.wav'));
+  const playerReset = useAudioPlayer(require('@/assets/sounds/reset-app.wav'));
+  const playerEat = useAudioPlayer(require('@/assets/sounds/eat.wav'));
+  const playerConfirm = useAudioPlayer(require('@/assets/sounds/confirm.wav'));
+  const playerAddNote = useAudioPlayer(require('@/assets/sounds/add-note.wav'));
+  const playerRemoveNote = useAudioPlayer(require('@/assets/sounds/remove-note.wav'));
+  const playerApprove = useAudioPlayer(require('@/assets/sounds/approve.wav'));
+  const playerPhoto = useAudioPlayer(require('@/assets/sounds/photo.wav'));
+  const playerMode = useAudioPlayer(require('@/assets/sounds/mode.wav'));
+
   useEffect(() => {
-    AsyncStorage.getItem('soundEnabled').then((value) => {
-      if (value !== null) setSoundEnabled(value === 'true');
+    AsyncStorage.getItem('soundEnabled').then((v) => {
+      if (v !== null) setSoundEnabled(v === 'true');
     });
+
+    (async () => {
+      try {
+        await setAudioModeAsync({
+          playsInSilentMode: true,
+          allowsRecording: false,
+        });
+      } catch {
+      }
+    })();
   }, []);
 
   const toggleSound = async (enabled: boolean) => {
@@ -16,34 +38,27 @@ export const useSound = () => {
     await AsyncStorage.setItem('soundEnabled', enabled.toString());
   };
 
-  const playSound = async (file: any) => {
+  const play = (player: { play: () => void; seekTo: (sec: number) => void }) => {
     if (!soundEnabled) return;
-
     try {
-      const { sound } = await Audio.Sound.createAsync(file);
-      await sound.playAsync();
-
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded && status.didJustFinish) {
-          sound.unloadAsync();
-        }
-      });
-    } catch (err) {
-      console.log('Error playing sound:', err);
+      player.seekTo(0);
+      player.play();
+    } catch (e) {
+      console.log('Error playing sound:', e);
     }
   };
 
-  const playButtonSound = () => playSound(require('@/assets/sounds/welcome.wav'));
-  const playSwitchSound = () => playSound(require('@/assets/sounds/sound-off.wav'));
-  const drinkAddSound = () => playSound(require('@/assets/sounds/drink.wav'));
-  const resetAppSound = () => playSound(require('@/assets/sounds/reset-app.wav'));
-  const eatAddSound = () => playSound(require('@/assets/sounds/eat.wav'));
-  const confirmButtonSound = () => playSound(require('@/assets/sounds/confirm.wav'));
-  const addNoteSound = () => playSound(require('@/assets/sounds/add-note.wav'));
-  const removeNoteSound = () => playSound(require('@/assets/sounds/remove-note.wav'));
-  const approveCheckSound = () => playSound(require('@/assets/sounds/approve.wav'));
-  const photoConfirmSound = () => playSound(require('@/assets/sounds/photo.wav'));
-  const modeSwitchSound = () => playSound(require('@/assets/sounds/mode.wav'));
+  const playButtonSound = () => play(playerWelcome);
+  const playSwitchSound = () => play(playerSwitch);
+  const drinkAddSound = () => play(playerDrink);
+  const resetAppSound = () => play(playerReset);
+  const eatAddSound = () => play(playerEat);
+  const confirmButtonSound = () => play(playerConfirm);
+  const addNoteSound = () => play(playerAddNote);
+  const removeNoteSound = () => play(playerRemoveNote);
+  const approveCheckSound = () => play(playerApprove);
+  const photoConfirmSound = () => play(playerPhoto);
+  const modeSwitchSound = () => play(playerMode);
 
   return {
     photoConfirmSound,
