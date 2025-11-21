@@ -14,6 +14,7 @@ import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 export default function NotesListScreen() {
   const { removeNoteSound } = useSound();
@@ -22,6 +23,7 @@ export default function NotesListScreen() {
   const router = useRouter();
   const { notes, deleteNote } = useNotesStore();
   const [query, setQuery] = useState('');
+  const { isIPad, maxContentWidth } = useDeviceInfo();
 
   const filteredNotes = notes.filter((note) => {
     const lower = query.toLowerCase();
@@ -37,6 +39,7 @@ export default function NotesListScreen() {
     end={{ x: 0.5, y: 0 }}
     style={styles.gradient}>
       <BackButton />
+      <View style={[styles.contentWrapper, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
       <CustomInput
         style={styles.input}
         value={query}
@@ -69,12 +72,16 @@ export default function NotesListScreen() {
         <BigButton title={t('add_button')} onPress={() => {
         router.push('/screens/NoteDetailsScreen')}} />
       </View>
+      </View>
     </LinearGradient>
   );
   }
 
 const styles = StyleSheet.create({
   gradient: {
+    flex: 1,
+  },
+  contentWrapper: {
     flex: 1,
   },
   input: {

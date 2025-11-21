@@ -17,6 +17,7 @@ import SmallButton from '@/components/SmallButton';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 const { width: screenWidth } = Dimensions.get('window');
 const COMPARISON_HEIGHT = 400;
@@ -25,6 +26,7 @@ export default function ImageComparisonScreen() {
   const { photoConfirmSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { isIPad, maxContentWidth } = useDeviceInfo();
   const [beforeImage, setBeforeImage] = useState<string | null>(null);
   const [afterImage, setAfterImage] = useState<string | null>(null);
   const [sliderValue, setSliderValue] = useState<number>(50);
@@ -34,8 +36,9 @@ export default function ImageComparisonScreen() {
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (_, gestureState) => {
-      const containerWidth = screenWidth - 40;
-      const relativeX = gestureState.moveX - 20;
+      const maxWidth = isIPad ? Math.min(600, screenWidth - 40) : screenWidth - 40;
+      const containerWidth = maxWidth;
+      const relativeX = gestureState.moveX - (screenWidth - containerWidth) / 2;
       const newValue = Math.min(100, Math.max(0, (relativeX / containerWidth) * 100));
       setSliderValue(newValue);
       pan.setValue(newValue);
@@ -84,7 +87,7 @@ export default function ImageComparisonScreen() {
     >
       <BackButton />
       
-      <View style={styles.centeredWrapper}>
+      <View style={[styles.centeredWrapper, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
         <CustomLabel>{t('progress')}</CustomLabel>
         
         <View style={styles.comparisonWrapper} {...panResponder.panHandlers}>
@@ -181,6 +184,7 @@ const styles = StyleSheet.create({
   },
   comparisonWrapper: {
     width: screenWidth - 40,
+    maxWidth: 600,
     height: COMPARISON_HEIGHT,
     borderRadius: 20,
     borderWidth: 1,
@@ -204,6 +208,7 @@ const styles = StyleSheet.create({
   },
   imageOverlay: {
     width: screenWidth - 40,
+    maxWidth: 600,
     height: '100%',
   },
   slider: {

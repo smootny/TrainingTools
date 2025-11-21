@@ -19,11 +19,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 export default function WaterIntakeScreen() {
   const { drinkAddSound, confirmButtonSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { isIPad, maxContentWidth } = useDeviceInfo();
   const [gender, setGender] = useLocalStorageState<'male' | 'female'>('gender', 'male');
   const [age, setAge] = useLocalStorageState<string>('age', '');
   const [weight, setWeight] = useLocalStorageState<string>('weight', '');
@@ -85,16 +87,17 @@ export default function WaterIntakeScreen() {
       <BackButton />
       {!showProgress ? (
         <>
-          <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <KeyboardAwareScrollView contentContainerStyle={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]} keyboardShouldPersistTaps="handled">
             <View style={styles.inputBox}>
               <CustomLabel style={styles.genderQuestion}>{t('gender')}</CustomLabel>
-              <View style={styles.genderContainer}>
+              <View style={[styles.genderContainer, isIPad && styles.genderContainerIPad]}>
                 <TouchableOpacity
                   onPress={() => setGender('male')}
                   style={[styles.genderImageWrapper, gender === 'male' && styles.genderSelected]}
                 >
                   <Image source={require('../../assets/images/male.png')} style={styles.genderImage} resizeMode="contain" />
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => setGender('female')}
                   style={[styles.genderImageWrapper, gender === 'female' && styles.genderSelected]}
@@ -102,7 +105,6 @@ export default function WaterIntakeScreen() {
                   <Image source={require('../../assets/images/female.png')} style={styles.genderImage} resizeMode="contain" />
                 </TouchableOpacity>
               </View>
-
               <CustomLabel>{t('old')}</CustomLabel>
               <CustomInput
                 style={styles.input}
@@ -130,7 +132,7 @@ export default function WaterIntakeScreen() {
           </View>
         </>
       ) : (
-        <KeyboardAwareScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <KeyboardAwareScrollView contentContainerStyle={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]} keyboardShouldPersistTaps="handled">
           <View style={styles.progressBox}>
             <Text style={[styles.waterDisplay, { color: theme.text }]}>{t('water_daily', { amount: totalWaterIntake })}</Text>
             <AnimatedCircularProgress
@@ -240,4 +242,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  genderContainerIPad: {
+    maxWidth: 360,
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    columnGap: 100,
+  },  
 });

@@ -16,6 +16,7 @@ import BigButton from '@/components/BigButton';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 export default function WelcomeScreen() {
   const { t } = useTranslation();
@@ -23,7 +24,8 @@ export default function WelcomeScreen() {
   const [inputsFilled, setInputsFilled] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
-  const { playButtonSound } = useSound()
+  const { playButtonSound } = useSound();
+  const { isIPad, maxContentWidth, spacingMultiplier } = useDeviceInfo();
   
   const checkInputs = (value: string) => {
     setName(value);
@@ -54,9 +56,9 @@ export default function WelcomeScreen() {
             imageStyle={styles.logoImage}
           >
             
-            <View style={styles.container}>
+            <View style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
             <CustomInput
-              style={{ marginTop: 420, marginBottom: 40 }}
+              style={{ marginTop: isIPad ? 500 * spacingMultiplier : 420, marginBottom: 40 * spacingMultiplier }}
               value={name}
               onChangeText={checkInputs}
               placeholder= {t('enter_name')}

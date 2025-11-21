@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSound } from '@/hooks/useSound';
 import { scheduleDailyNotification } from '@/utils/notifications';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 
 export default function SettingsScreen() {
@@ -28,6 +29,7 @@ export default function SettingsScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const { language, toggleLanguage } = useLanguage();
+  const { isIPad, maxContentWidth, spacingMultiplier } = useDeviceInfo();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
@@ -125,7 +127,7 @@ export default function SettingsScreen() {
   return (
     <LinearGradient colors={[theme.background, theme.secondary]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
       <BackButton />
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
         <TouchableOpacity style={[styles.profilePicDiv, { borderColor: theme.profilePicDiv.borderColor }]} onPress={handleChoosePhoto}>
           {profileImage ? (
             <Image source={{ uri: profileImage }} style={styles.photo} />
@@ -282,7 +284,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     justifyContent: 'space-between', 
     width: 300, 
-    marginBottom: 10 
+    marginBottom: 10,
+    maxWidth: '90%',
   },
   titleOptions: { 
     fontSize: 20, 

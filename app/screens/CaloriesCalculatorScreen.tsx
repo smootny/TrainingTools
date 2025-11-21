@@ -18,6 +18,7 @@ import SmallButton from '@/components/SmallButton';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 type Meal = {
   id: string;
@@ -31,6 +32,7 @@ export default function CaloriesCalculatorScreen() {
   const { eatAddSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { isIPad, maxContentWidth } = useDeviceInfo();
   const [inputCalories, setInputCalories] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -106,7 +108,7 @@ export default function CaloriesCalculatorScreen() {
     >
       <BackButton />
       
-      <View style={styles.container}>
+      <View style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
         <View style={styles.totalContainer}>
           <Text style={[styles.totalLabel, {color: theme.text}]}>{t('total')}:</Text>
           <Text style={[styles.totalValue, {color: theme.text}]}>{totalAmount} kcal</Text>
@@ -173,6 +175,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 120,
+    paddingHorizontal: 20,
   },
   totalContainer: {
     flexDirection: 'row',

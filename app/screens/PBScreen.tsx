@@ -21,6 +21,7 @@ import CustomLabel from '@/components/CustomLabel';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 const PB_KEYS = {
   bench: 'pb_bench',
@@ -34,6 +35,7 @@ export default function PersonalBestsScreen() {
   const { approveCheckSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { isIPad, maxContentWidth } = useDeviceInfo();
   const [bench, setBench] = useState('');
   const [squat, setSquat] = useState('');
   const [deadlift, setDeadlift] = useState('');
@@ -94,7 +96,11 @@ export default function PersonalBestsScreen() {
         <Image source={iconSource} style={styles.pbIcon} />
         <Text style={styles.pbLabel}>{label}</Text>
         <CustomInput
-          style={[styles.pbInput, locked[key] && theme.pbInputLocked]}
+          style={[
+            styles.pbInput,
+            isIPad && styles.pbInputIPad,
+            locked[key] && theme.pbInputLocked
+          ]}
           keyboardType="numeric"
           placeholder={key === 'pullups' ? `${t('input_number')}` : `${t('input_kilograms')}`}
           placeholderTextColor="#000"
@@ -142,7 +148,7 @@ export default function PersonalBestsScreen() {
       >
         <BackButton />
         <KeyboardAvoidingView
-          style={styles.container}
+          style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={10}
         >
@@ -199,5 +205,10 @@ const styles = StyleSheet.create({
     height: 40, 
     fontSize: 16, 
     borderRadius: 10 
+  },
+  pbInputIPad: {
+    width: 150,
+    alignSelf: 'center',
+    ...(Platform.OS === 'ios' ? { flex: undefined } : null),
   },
 });

@@ -16,6 +16,7 @@ import SmallButton from '@/components/SmallButton';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 export default function NoteDetailsScreen() {
   const { addNoteSound } = useSound();
@@ -24,6 +25,7 @@ export default function NoteDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { notes, addNote, updateNote } = useNotesStore();
+  const { isIPad, maxContentWidth } = useDeviceInfo();
 
   const isEditing = id !== undefined;
   const parsedId = id ?? null;
@@ -66,7 +68,7 @@ export default function NoteDetailsScreen() {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
-          style={styles.container}
+          style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={10}
         >

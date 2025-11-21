@@ -13,12 +13,14 @@ import SmallButton from '@/components/SmallButton';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 const MAX_LAPS = 7;
 
 export default function StopwatchScreen() {
   const { confirmButtonSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { isIPad, maxContentWidth, fontSizeMultiplier } = useDeviceInfo();
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [laps, setLaps] = useState<number[]>([]);
@@ -75,10 +77,10 @@ export default function StopwatchScreen() {
       end={{ x: 0.5, y: 0 }}
       style={styles.gradient}
     >
-      <View style={styles.container}>
-        <BackButton />
+      <BackButton />
+      <View style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
 
-        <Text style={[styles.timerText, { color: theme.text }]}>{formatTime(time)}</Text>
+        <Text style={[styles.timerText, { color: theme.text, fontSize: isIPad ? 80 * fontSizeMultiplier : 80 }]}>{formatTime(time)}</Text>
 
         <View style={styles.buttonContainer}>
           <SmallButton
@@ -131,6 +133,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 120,
     justifyContent: 'flex-start',
+    paddingHorizontal: 20,
   },
   timerText: {
     textAlign: 'center',

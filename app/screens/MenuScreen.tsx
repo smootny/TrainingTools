@@ -12,12 +12,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 
 export default function MenuScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { theme } = useTheme();
+  const { isIPad, spacingMultiplier } = useDeviceInfo();
 
   const menuItems = [
     { label: t('training'), image: require('../../assets/images/exercise.png'), route: 'screens/ProgressBarScreen' },
@@ -29,6 +31,8 @@ export default function MenuScreen() {
     { label: t('my_records'), image: require('../../assets/images/trophy.png'), route: 'screens/PBScreen' },
     { label: t('settings'), image: require('../../assets/images/settings.png'), route: 'screens/SettingsScreen' },
   ];
+
+  const dynamicStyles = getMenuStyles(isIPad, spacingMultiplier);
 
   const renderButton = ({ label, image, route }: any) => {
     const scale = new Animated.Value(1);
@@ -58,14 +62,14 @@ export default function MenuScreen() {
   
 
     return (
-      <Animated.View key={label} style={[styles.buttonWrapper, { transform: [{ scale }] }]}>
+      <Animated.View key={label} style={[dynamicStyles.buttonWrapper, { transform: [{ scale }] }]}>
         <Pressable
           onPressIn={handlePress}
           onPressOut={onPressOut}
-          style={[styles.tile, {borderColor: theme.tile.borderColor}]}
+          style={[dynamicStyles.tile, {borderColor: theme.tile.borderColor}]}
         >
-          <Image source={image} style={styles.icon} resizeMode="contain" />
-          <Text style={styles.label}>{label}</Text>
+          <Image source={image} style={dynamicStyles.icon} resizeMode="contain" />
+          <Text style={dynamicStyles.label}>{label}</Text>
         </Pressable>
       </Animated.View>
     );
@@ -78,7 +82,7 @@ export default function MenuScreen() {
         end={{ x: 0.5, y: 0 }} 
         style={styles.gradient}
         >
-      <View style={styles.container}>
+      <View style={dynamicStyles.container}>
         {menuItems.map(renderButton)}
       </View>
     </LinearGradient>
@@ -89,42 +93,46 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
+});
+
+// Dynamic styles based on device
+const getMenuStyles = (isIPad: boolean, spacingMultiplier: number) => StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 100,
-    padding: 20,
-    gap: 12,
+    flexDirection: 'row' as const,
+    flexWrap: 'wrap' as const,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    marginTop: isIPad ? 100 * spacingMultiplier : 100,
+    padding: isIPad ? 20 * spacingMultiplier : 20,
+    gap: isIPad ? 12 * spacingMultiplier : 12,
+    ...(isIPad && { maxWidth: 600, alignSelf: 'center' }),
   },
   buttonWrapper: {
-    margin: 10,
+    margin: isIPad ? 10 * spacingMultiplier : 10,
   },
   tile: {
-    width: 130,
-    height: 130,
+    width: isIPad ? 160 : 130,
+    height: isIPad ? 160 : 130,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     shadowColor: "#00000",
     shadowOffset: {
-	  width: 0,
-	  height: 4,
+      width: 0,
+      height: 4,
     },
     shadowOpacity: 0.4,
     shadowRadius: 4,
     borderWidth: 0.5,
     backgroundColor: 'rgba(255, 255, 255, 1)',
-    
   },
   icon: {
-    width: 60,
-    height: 60,
-    marginBottom: 8,
+    width: isIPad ? 75 : 60,
+    height: isIPad ? 75 : 60,
+    marginBottom: isIPad ? 8 * spacingMultiplier : 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: isIPad ? 16 : 14,
     fontFamily: 'Roboto-Light',
     color: 'black',
   },

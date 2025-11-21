@@ -20,6 +20,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/hooks/useSound';
 import * as Haptics from 'expo-haptics';
+import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -27,6 +28,7 @@ export default function ProgressBarScreen() {
   const { confirmButtonSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { isIPad, maxContentWidth } = useDeviceInfo();
 
   const progressHeight = useRef(new Animated.Value(0)).current;
   const progressWidth = useRef(new Animated.Value(100)).current;
@@ -80,16 +82,8 @@ export default function ProgressBarScreen() {
           startOpacity.setValue(0);
 
           Animated.parallel([
-            Animated.timing(startScale, {
-              toValue: 1.2,
-              duration: 500,
-              useNativeDriver: true,
-            }),
-            Animated.timing(startOpacity, {
-              toValue: 1,
-              duration: 500,
-              useNativeDriver: true,
-            }),
+            Animated.timing(startScale, { toValue: 1.2, duration: 500, useNativeDriver: true }),
+            Animated.timing(startOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
           ]).start(() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             setTimeout(() => {
@@ -164,15 +158,52 @@ export default function ProgressBarScreen() {
       end={{ x: 0.5, y: 0 }}
       style={styles.gradient}
     >
+      <BackButton />
+
+      {/* === FULLSCREEN OVERLAYS === */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.fullOverlay,
+          {
+            backgroundColor: barColor,
+            height:
+              barDirection !== 'right-left'
+                ? progressHeight.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
+                : '100%',
+            width:
+              barDirection === 'right-left'
+                ? progressWidth.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
+                : '100%',
+            top: barDirection === 'bottom-up' ? undefined : 0,
+            bottom: barDirection === 'bottom-up' ? 0 : undefined,
+            zIndex: 998,
+          },
+        ]}
+      />
+
+      {isDebounceActive && countdown > 0 && (
+        <View pointerEvents="none" style={[styles.countdownOverlay, styles.absoluteFill]}>
+          <Text style={styles.countdownText}>{countdown}</Text>
+        </View>
+      )}
+
+      {showStart && (
+        <View pointerEvents="none" style={[styles.countdownOverlay, styles.absoluteFill]}>
+          <Animated.Text style={[styles.startText, { opacity: startOpacity, transform: [{ scale: startScale }] }]}>
+            START!
+          </Animated.Text>
+        </View>
+      )}
+
+      {/* === WĄSKI, WYcentrowany KONTENER Z FORMULARZEM === */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
-          style={styles.container}
+          style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={30}
         >
-          <BackButton />
-
-          {!isDebounceActive && countdown === 0 && !showStart && repCountRef.current === 0 && (
+          {!isDebounceActive && countdown === 0 && !showStart && (
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {[
                 { label: t('excentric'), value: fillTime, setter: setFillTime },
@@ -198,46 +229,6 @@ export default function ProgressBarScreen() {
               </View>
             </ScrollView>
           )}
-
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: barColor,
-                height: barDirection !== 'right-left'
-                  ? progressHeight.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
-                  : '100%',
-                width: barDirection === 'right-left'
-                  ? progressWidth.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
-                  : '100%',
-                top: barDirection === 'bottom-up' ? undefined : 0,
-                bottom: barDirection === 'bottom-up' ? 0 : undefined,
-                zIndex: 998,
-              },
-            ]}
-          />
-
-          {isDebounceActive && countdown > 0 && (
-            <View style={styles.countdownOverlay}>
-              <Text style={styles.countdownText}>{countdown}</Text>
-            </View>
-          )}
-
-          {showStart && (
-            <View style={styles.countdownOverlay}>
-              <Animated.Text
-                style={[
-                  styles.startText,
-                  {
-                    opacity: startOpacity,
-                    transform: [{ scale: startScale }],
-                  },
-                ]}
-              >
-                START!
-              </Animated.Text>
-            </View>
-          )}
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </LinearGradient>
@@ -245,40 +236,21 @@ export default function ProgressBarScreen() {
 }
 
 const styles = StyleSheet.create({
-  gradient: { 
-    flex: 1 
-  },
-  container: { 
-    flex: 1 
-  },
-  scrollContent: { 
-    paddingTop: 120 
-  },
-  inputBlock: { 
-    marginBottom: 24 
-  },
-  input: { 
-    alignSelf: 'center' 
-  },
-  label: { 
-    paddingLeft: 4 
-  },
+  gradient: { flex: 1 },
+  container: { flex: 1 },
+  scrollContent: { paddingTop: 120 },
+  inputBlock: { marginBottom: 24 },
+  input: { alignSelf: 'center' },
+  label: { paddingLeft: 4 },
+  absoluteFill: { ...StyleSheet.absoluteFillObject },
+  fullOverlay: { ...StyleSheet.absoluteFillObject },
   countdownOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: screenHeight,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.9)',
     zIndex: 999,
   },
-  countdownText: {
-    fontSize: 100,
-    fontFamily: 'Roboto-Regular',
-    color: 'white',
-  },
+  countdownText: { fontSize: 100, fontFamily: 'Roboto-Regular', color: 'white' },
   startText: {
     fontSize: 80,
     fontFamily: 'Roboto-Bold',
