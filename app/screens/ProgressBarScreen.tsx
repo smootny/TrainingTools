@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Animated,
-  Dimensions,
   KeyboardAvoidingView,
   ScrollView,
   Platform,
@@ -22,28 +21,34 @@ import { useSound } from '@/hooks/useSound';
 import * as Haptics from 'expo-haptics';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
-const screenHeight = Dimensions.get('window').height;
-
 export default function ProgressBarScreen() {
   const { confirmButtonSound } = useSound();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { isIPad, maxContentWidth } = useDeviceInfo();
 
+  const [isSequenceActive, setIsSequenceActive] = useState(false);
+
   const progressHeight = useRef(new Animated.Value(0)).current;
-  const progressWidth = useRef(new Animated.Value(100)).current;
+  const progressWidth  = useRef(new Animated.Value(100)).current;
 
   const [countdown, setCountdown] = useState(0);
   const [isDebounceActive, setIsDebounceActive] = useState(false);
   const [showStart, setShowStart] = useState(false);
+
+  const [phaseVisible, setPhaseVisible] = useState(false);
+  const [phaseLabel, setPhaseLabel] = useState('');
+  const phaseScale   = useRef(new Animated.Value(0)).current;
+  const phaseOpacity = useRef(new Animated.Value(0)).current;
+
   const [barColor, setBarColor] = useState('#204829');
-  const [barDirection, setBarDirection] = useState<'top-down' | 'right-left' | 'bottom-up'>('top-down');
+  const [barDirection, setBarDirection] = useState<'top-down' | 'right-left' | 'bottom-up' | 'left-right'>('top-down');
 
   const [fillTime, setFillTime] = useState('');
-  const [stayTime, setStayTime] = useState('');
+  const [stayTime, setStayTime] = useState(''); 
   const [emptyTime, setEmptyTime] = useState('');
   const [debounceTime, setDebounceTime] = useState('');
-  const [repetitions, setRepetitions] = useState('');
+  const [repetitions, setRepetitions]   = useState('');
   const [inputsFilled, setInputsFilled] = useState(false);
 
   const startScale = useRef(new Animated.Value(0)).current;
@@ -65,9 +70,36 @@ export default function ProgressBarScreen() {
     };
   }, []);
 
+  const uiLocked = isSequenceActive || isDebounceActive || showStart;
+
+  const showPhase = (label: string) => {
+    setPhaseLabel(label);
+    setPhaseVisible(true);
+    phaseScale.setValue(0.5);
+    phaseOpacity.setValue(0);
+    Animated.parallel([
+      Animated.timing(phaseScale,   { toValue: 1.2, duration: 400, useNativeDriver: true }),
+      Animated.timing(phaseOpacity, { toValue: 1,   duration: 400, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const hidePhase = (cb?: () => void) => {
+    Animated.parallel([
+      Animated.timing(phaseScale,   { toValue: 1.0, duration: 200, useNativeDriver: true }),
+      Animated.timing(phaseOpacity, { toValue: 0,   duration: 200, useNativeDriver: true }),
+    ]).start(() => {
+      setPhaseVisible(false);
+      cb && cb();
+    });
+  };
+
   const startCountdown = () => {
+    if (isSequenceActive) return;
+
+    setIsSequenceActive(true);
     repCountRef.current = Number(repetitions);
-    setCountdown(Number(debounceTime));
+
+    setCountdown(4);
     setIsDebounceActive(true);
 
     countdownRef.current = setInterval(() => {
@@ -82,8 +114,8 @@ export default function ProgressBarScreen() {
           startOpacity.setValue(0);
 
           Animated.parallel([
-            Animated.timing(startScale, { toValue: 1.2, duration: 500, useNativeDriver: true }),
-            Animated.timing(startOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+            Animated.timing(startScale,  { toValue: 1.2, duration: 500, useNativeDriver: true }),
+            Animated.timing(startOpacity,{ toValue: 1,   duration: 500, useNativeDriver: true }),
           ]).start(() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             setTimeout(() => {
@@ -103,51 +135,74 @@ export default function ProgressBarScreen() {
     if (repCountRef.current > 0) {
       repCountRef.current--;
       fillPhase();
+    } else {
+      setIsSequenceActive(false);
     }
   };
 
   const fillPhase = () => {
+    showPhase('Down!');
     setBarColor('#FF4C4C');
     setBarDirection('top-down');
     progressHeight.setValue(0);
+    progressWidth.setValue(100);
     Animated.timing(progressHeight, {
       toValue: 100,
       duration: Number(fillTime) * 1000,
       useNativeDriver: false,
-    }).start(() => stayPhase());
+    }).start(() => hidePhase(stayPhase));
   };
 
   const stayPhase = () => {
+    showPhase('Pause');
     setBarColor('#FFD93D');
     setBarDirection('right-left');
+    progressHeight.setValue(100);
     progressWidth.setValue(0);
     Animated.timing(progressWidth, {
       toValue: 100,
       duration: Number(stayTime) * 1000,
       useNativeDriver: false,
-    }).start(() => emptyPhase());
+    }).start(() => hidePhase(emptyPhase));
   };
 
   const emptyPhase = () => {
+    showPhase('Up');
     setBarColor('#6BCB77');
     setBarDirection('bottom-up');
-    progressHeight.setValue(0);
     progressWidth.setValue(100);
+    progressHeight.setValue(0);
     Animated.timing(progressHeight, {
       toValue: 100,
       duration: Number(emptyTime) * 1000,
       useNativeDriver: false,
+    }).start(() => hidePhase(leftToRightPhase));
+  };
+
+  const leftToRightPhase = () => {
+    showPhase('Pause');
+    setBarColor('#3FA0FF');
+    setBarDirection('left-right');
+    progressHeight.setValue(100);
+    progressWidth.setValue(0);
+    Animated.timing(progressWidth, {
+      toValue: 100,
+      duration: Number(debounceTime) * 1000,
+      useNativeDriver: false,
     }).start(() => {
-      if (repCountRef.current > 0) {
-        runRepetitions();
-      } else {
-        setTimeout(() => {
-          progressHeight.setValue(0);
-          progressWidth.setValue(0);
-          setBarColor('#204829');
-          setBarDirection('top-down');
-        }, 1000);
-      }
+      hidePhase(() => {
+        if (repCountRef.current > 0) {
+          runRepetitions();
+        } else {
+          setTimeout(() => {
+            progressHeight.setValue(0);
+            progressWidth.setValue(0);
+            setBarColor('#204829');
+            setBarDirection('top-down');
+            setIsSequenceActive(false);
+          }, 400);
+        }
+      });
     });
   };
 
@@ -160,33 +215,39 @@ export default function ProgressBarScreen() {
     >
       <BackButton />
 
-      {/* === FULLSCREEN OVERLAYS === */}
+  
       <Animated.View
         pointerEvents="none"
         style={[
           styles.fullOverlay,
           {
             backgroundColor: barColor,
-            height:
-              barDirection !== 'right-left'
-                ? progressHeight.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
-                : '100%',
-            width:
-              barDirection === 'right-left'
-                ? progressWidth.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
-                : '100%',
-            top: barDirection === 'bottom-up' ? undefined : 0,
+            height: barDirection === 'top-down' || barDirection === 'bottom-up'
+              ? progressHeight.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
+              : '100%',
+            width: barDirection === 'left-right' || barDirection === 'right-left'
+              ? progressWidth.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] })
+              : '100%',
+            top:    barDirection === 'bottom-up' ? undefined : 0,
             bottom: barDirection === 'bottom-up' ? 0 : undefined,
+            left:   barDirection === 'right-left' ? undefined : 0,
+            right:  barDirection === 'right-left' ? 0 : undefined,
             zIndex: 998,
           },
         ]}
       />
+
+      {(isSequenceActive || isDebounceActive || showStart) && (
+        <View pointerEvents="none" style={[styles.dimOverlay, styles.absoluteFill]} />
+      )}
+
 
       {isDebounceActive && countdown > 0 && (
         <View pointerEvents="none" style={[styles.countdownOverlay, styles.absoluteFill]}>
           <Text style={styles.countdownText}>{countdown}</Text>
         </View>
       )}
+
 
       {showStart && (
         <View pointerEvents="none" style={[styles.countdownOverlay, styles.absoluteFill]}>
@@ -196,36 +257,49 @@ export default function ProgressBarScreen() {
         </View>
       )}
 
-      {/* === WĄSKI, WYcentrowany KONTENER Z FORMULARZEM === */}
+  
+      {phaseVisible && (
+        <View pointerEvents="none" style={[styles.countdownOverlay, styles.absoluteFill]}>
+          <Animated.Text style={[styles.startText, { opacity: phaseOpacity, transform: [{ scale: phaseScale }] }]}>
+            {phaseLabel}
+          </Animated.Text>
+        </View>
+      )}
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={30}
         >
-          {!isDebounceActive && countdown === 0 && !showStart && (
+          {!isDebounceActive && !showStart && (
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {[
-                { label: t('excentric'), value: fillTime, setter: setFillTime },
-                { label: t('pause'), value: stayTime, setter: setStayTime },
-                { label: t('izocentric'), value: emptyTime, setter: setEmptyTime },
-                { label: t('exercise'), value: debounceTime, setter: setDebounceTime },
-                { label: t('reps'), value: repetitions, setter: setRepetitions },
-              ].map(({ label, value, setter }, idx) => (
+                { label: t('excentric'),  value: fillTime,     setter: setFillTime,     ph: t('input_seconds') },
+                { label: t('pause'),      value: stayTime,     setter: setStayTime,     ph: t('input_seconds') },
+                { label: t('izocentric'), value: emptyTime,    setter: setEmptyTime,    ph: t('input_seconds') },
+                { label: t('exercise'),   value: debounceTime, setter: setDebounceTime, ph: t('input_seconds') },
+                { label: t('reps'),       value: repetitions,  setter: setRepetitions,  ph: t('input_number') },
+              ].map(({ label, value, setter, ph }, idx) => (
                 <View key={idx} style={styles.inputBlock}>
                   <CustomLabel style={styles.label}>{label}</CustomLabel>
                   <CustomInput
                     value={value}
                     style={styles.input}
                     keyboardType="numeric"
-                    placeholder={idx === 4 ? `${t('input_number')}` : `${t('input_seconds')}`}
+                    placeholder={ph}
                     onChangeText={setter}
+                    editable={!uiLocked}
                   />
                 </View>
               ))}
 
               <View style={{ alignItems: 'center', marginTop: 80 }}>
-                <BigButton title={t('start')} onPress={startCountdown} disabled={!inputsFilled} />
+                <BigButton
+                  title={t('start')}
+                  onPress={startCountdown}
+                  disabled={!inputsFilled || uiLocked}
+                />
               </View>
             </ScrollView>
           )}
@@ -243,11 +317,17 @@ const styles = StyleSheet.create({
   input: { alignSelf: 'center' },
   label: { paddingLeft: 4 },
   absoluteFill: { ...StyleSheet.absoluteFillObject },
+
   fullOverlay: { ...StyleSheet.absoluteFillObject },
+
+  dimOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    zIndex: 997,
+  },
   countdownOverlay: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.9)',
+    // backgroundColor: 'rgba(0,0,0,0.9)',
     zIndex: 999,
   },
   countdownText: { fontSize: 100, fontFamily: 'Roboto-Regular', color: 'white' },
