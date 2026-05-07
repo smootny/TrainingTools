@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,27 +23,67 @@ export default function WelcomeScreen() {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [inputsFilled, setInputsFilled] = useState(false);
+  const [checkingUser, setCheckingUser] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const mountedRef = useRef(true);
+
   const router = useRouter();
   const { theme } = useTheme();
   const { playButtonSound } = useSound();
   const { isIPad, maxContentWidth, spacingMultiplier } = useDeviceInfo();
-  
+
+  useEffect(() => {
+    mountedRef.current = true;
+    (async () => {
+      try {
+        const saved = await AsyncStorage.getItem('userName');
+        if (saved && saved.trim()) {
+          router.replace('/screens/MenuScreen');
+          return;
+        }
+      } finally {
+        if (mountedRef.current) setCheckingUser(false);
+      }
+    })();
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [router]);
+
   const checkInputs = (value: string) => {
     setName(value);
-    setInputsFilled(value.trim() !== '');
+    setInputsFilled(value.trim().length > 0);
   };
 
   const goToMenuPage = async () => {
-    if (inputsFilled) {
+    if (!inputsFilled || submitting) return;
+    setSubmitting(true);
+    try {
+      const trimmed = name.trim();
+      if (!trimmed) return;
       playButtonSound();
-      await AsyncStorage.setItem('userName', name);
+      await AsyncStorage.setItem('userName', trimmed);
       router.replace('/screens/MenuScreen');
+    } finally {
+      if (mountedRef.current) setSubmitting(false);
     }
   };
 
-  return (
-    <LinearGradient colors={[theme.background, theme.secondary]} start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }} style={styles.gradient}>
+  if (checkingUser) {
+    return (
+      <View style={styles.loadingWrap}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
+  return (
+    <LinearGradient
+      colors={[theme.background, theme.secondary]}
+      start={{ x: 0.5, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+      style={styles.gradient}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           style={styles.flexContainer}
@@ -55,22 +96,20 @@ export default function WelcomeScreen() {
             style={styles.background}
             imageStyle={styles.logoImage}
           >
-            
             <View style={[styles.container, isIPad && { maxWidth: maxContentWidth, alignSelf: 'center' }]}>
-            <CustomInput
-              style={{ marginTop: isIPad ? 500 * spacingMultiplier : 420, marginBottom: 40 * spacingMultiplier }}
-              value={name}
-              onChangeText={checkInputs}
-              placeholder= {t('enter_name')}
-              returnKeyType="done"
-              onSubmitEditing={() => inputsFilled && goToMenuPage()}
-            />
-              
-
+              <CustomInput
+                style={{ marginTop: isIPad ? 500 * spacingMultiplier : 420, marginBottom: 40 * spacingMultiplier }}
+                value={name}
+                onChangeText={checkInputs}
+                placeholder={t('enter_name')}
+                returnKeyType="done"
+                onSubmitEditing={() => inputsFilled && goToMenuPage()}
+                editable={!submitting}
+              />
               <BigButton
                 title={t('go')}
                 onPress={goToMenuPage}
-                disabled={!inputsFilled}
+                disabled={!inputsFilled || submitting}
               />
             </View>
           </ImageBackground>
@@ -81,6 +120,11 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingWrap: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   gradient: {
     flex: 1,
   },

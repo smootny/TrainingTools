@@ -155,7 +155,7 @@ export default function ProgressBarScreen() {
   };
 
   const fillPhase = () => {
-    setPhaseLabel('Down!');
+    setPhaseLabel(t('down'));
     setBarColor('#FF4C4C');
     setBarDirection('top-down');
 
@@ -169,7 +169,7 @@ export default function ProgressBarScreen() {
   };
 
   const stayPhase = () => {
-    setPhaseLabel('Pause');
+    setPhaseLabel(t('pause'));
     setBarColor('#FFD93D');
     setBarDirection('right-left');
 
@@ -183,7 +183,7 @@ export default function ProgressBarScreen() {
   };
 
   const emptyPhase = () => {
-    setPhaseLabel('Up');
+    setPhaseLabel(t('up'));
     setBarColor('#6BCB77');
     setBarDirection('bottom-up');
 
@@ -197,7 +197,7 @@ export default function ProgressBarScreen() {
   };
 
   const leftToRightPhase = () => {
-    setPhaseLabel('Pause');
+    setPhaseLabel(t('pause'));
     setBarColor('#3FA0FF');
     setBarDirection('left-right');
 
@@ -295,9 +295,9 @@ export default function ProgressBarScreen() {
             >
               {[
                 { label: t('excentric'), value: fillTime, setter: setFillTime, ph: t('input_seconds') },
-                { label: t('pause'), value: stayTime, setter: setStayTime, ph: t('input_seconds') },
+                { label: t('pause_label'), value: stayTime, setter: setStayTime, ph: t('input_seconds') },
                 { label: t('izocentric'), value: emptyTime, setter: setEmptyTime, ph: t('input_seconds') },
-                { label: t('pause'), value: restTime, setter: setRestTime, ph: t('input_seconds') },
+                { label: t('pause_between'), value: restTime, setter: setRestTime, ph: t('input_seconds') },
                 { label: t('reps'), value: repetitions, setter: setRepetitions, ph: t('input_number') },
               ].map(({ label, value, setter, ph }, idx) => (
                 <View key={idx} style={styles.inputBlock}>

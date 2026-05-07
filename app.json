@@ -7,13 +7,17 @@
     "icon": "./assets/images/icon.png",
     "scheme": "trainingtools",
     "userInterfaceStyle": "automatic",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "newArchEnabled": true,
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sebastianblazejewski.trainingtools",
-      "buildNumber": "7",
+      "buildNumber": "8",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "UISupportedInterfaceOrientations~ipad": [
@@ -46,10 +50,14 @@
       "backgroundColor": "#ffffff",
       "resizeMode": "contain"
     },
-    "experiments": { "typedRoutes": true },
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
       "router": {},
-      "eas": { "projectId": "421db370-f967-4d7c-92f8-312265c5a421" }
+      "eas": {
+        "projectId": "421db370-f967-4d7c-92f8-312265c5a421"
+      }
     }
   }
 }

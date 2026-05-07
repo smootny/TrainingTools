@@ -1,21 +1,34 @@
-import { useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
+import { Redirect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Index() {
-  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [hasName, setHasName] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      router.replace('/screens/WelcomeScreen');
-    }, 100);
+    (async () => {
+      try {
+        const saved = await AsyncStorage.getItem('userName');
+        setHasName(!!(saved && saved.trim()));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-    return () => clearTimeout(timeout);
-  }, [router]);
+  if (loading || hasName === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size="large" />
-    </View>
+  return hasName ? (
+    <Redirect href="/screens/MenuScreen" />
+  ) : (
+    <Redirect href="/screens/WelcomeScreen" />
   );
 }

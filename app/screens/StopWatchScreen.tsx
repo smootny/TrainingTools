@@ -25,6 +25,8 @@ export default function StopwatchScreen() {
   const [time, setTime] = useState(0);
   const [laps, setLaps] = useState<number[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startTimestampRef = useRef<number | null>(null);
+  const elapsedBeforeStartRef = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -32,22 +34,42 @@ export default function StopwatchScreen() {
     };
   }, []);
 
+  const clearTimerInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const getElapsedMs = () => {
+    if (startTimestampRef.current === null) return elapsedBeforeStartRef.current;
+    return elapsedBeforeStartRef.current + (Date.now() - startTimestampRef.current);
+  };
+
   const toggleStartStop = () => {
-    setIsRunning((prev) => {
-      confirmButtonSound()
-      if (!prev) {
-        intervalRef.current = setInterval(() => {
-          setTime((prevTime) => prevTime + 10);
-        }, 10);
-      } else {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-      }
-      return !prev;
-    });
+    confirmButtonSound();
+
+    if (!isRunning) {
+      startTimestampRef.current = Date.now();
+      intervalRef.current = setInterval(() => {
+        setTime(getElapsedMs());
+      }, 50);
+      setIsRunning(true);
+      return;
+    }
+
+    const elapsedNow = getElapsedMs();
+    elapsedBeforeStartRef.current = elapsedNow;
+    startTimestampRef.current = null;
+    setTime(elapsedNow);
+    clearTimerInterval();
+    setIsRunning(false);
   };
 
   const resetTimer = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    clearTimerInterval();
+    startTimestampRef.current = null;
+    elapsedBeforeStartRef.current = 0;
     setIsRunning(false);
     setTime(0);
     setLaps([]);
